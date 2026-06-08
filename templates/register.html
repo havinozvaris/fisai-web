@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Kayıt Ol</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Kayıt Ol</h2>
+
+        <form action="/login" method="GET">
+            <input type="text" placeholder="Ad Soyad" required>
+            <input type="email" placeholder="E-posta" required>
+            <input type="password" placeholder="Şifre" required>
+            <button type="submit">Kayıt Ol</button>
+        </form>
+
+        <p>Zaten hesabın var mı? <a href="/login">Giriş yap</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Fiş Yükle</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+
+        <h2>Fiş Yükle</h2>
+
+        {% if message %}
+            <p class="success">{{ message }}</p>
+        {% endif %}
+
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <input type="file" name="receipt" accept="image/*,.pdf" required>
+            <button type="submit">Yükle</button>
+        </form>
+        {% if analiz %}
+    <h3>Fiş Analizi</h3>
+    <div class="analysis-box">
+        <p><strong>Tarih:</strong> {{ analiz.tarih }}</p>
+        <p><strong>Toplam Tutar:</strong> {{ analiz.toplam }} TL</p>
+    </div>
+{% endif %}
+
+        {% if ocr_text %}
+            <h3>OCR Sonucu</h3>
+            <pre>{{ ocr_text }}</pre>
+        {% endif %}
+
+        <a href="/dashboard" class="btn">Panele Dön</a>
+
+    </div>
+</body>
+</html>
