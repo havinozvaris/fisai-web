@@ -2,20 +2,65 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Giriş Yap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap - FisAI</title>
+
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Giriş Yap</h2>
+
+<div class="auth-page">
+
+    <div class="auth-container">
+
+        <div class="auth-icon">
+            🔐
+        </div>
+
+        <h2 class="auth-title">
+            Tekrar Hoş Geldin
+        </h2>
+
+        <p class="auth-subtitle">
+            Hesabına giriş yaparak fiş analizlerine devam et.
+        </p>
 
         <form action="/dashboard" method="GET">
-            <input type="email" placeholder="E-posta" required>
-            <input type="password" placeholder="Şifre" required>
-            <button type="submit">Giriş Yap</button>
+
+            <input
+                type="email"
+                placeholder="E-posta adresiniz"
+                required
+            >
+
+            <input
+                type="password"
+                placeholder="Şifreniz"
+                required
+            >
+
+            <button
+                type="submit"
+                class="auth-btn"
+            >
+                Giriş Yap
+            </button>
+
         </form>
 
-        <p>Hesabın yok mu? <a href="/register">Kayıt ol</a></p>
+        <div class="auth-footer">
+
+            Hesabın yok mu?
+
+            <a href="/register">
+                Kayıt Ol
+            </a>
+
+        </div>
+
     </div>
+
+</div>
+
 </body>
 </html>

@@ -2,21 +2,71 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Kayıt Ol</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol - FisAI</title>
+
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Kayıt Ol</h2>
+
+<div class="auth-page">
+
+    <div class="auth-container">
+
+        <div class="auth-icon">
+            👤
+        </div>
+
+        <h2 class="auth-title">
+            Hesap Oluştur
+        </h2>
+
+        <p class="auth-subtitle">
+            FisAI dünyasına katıl ve harcamalarını takip etmeye başla.
+        </p>
 
         <form action="/login" method="GET">
-            <input type="text" placeholder="Ad Soyad" required>
-            <input type="email" placeholder="E-posta" required>
-            <input type="password" placeholder="Şifre" required>
-            <button type="submit">Kayıt Ol</button>
+
+            <input
+                type="text"
+                placeholder="Ad Soyad"
+                required
+            >
+
+            <input
+                type="email"
+                placeholder="E-posta adresiniz"
+                required
+            >
+
+            <input
+                type="password"
+                placeholder="Şifreniz"
+                required
+            >
+
+            <button
+                type="submit"
+                class="auth-btn"
+            >
+                Kayıt Ol
+            </button>
+
         </form>
 
-        <p>Zaten hesabın var mı? <a href="/login">Giriş yap</a></p>
+        <div class="auth-footer">
+
+            Zaten hesabın var mı?
+
+            <a href="/login">
+                Giriş Yap
+            </a>
+
+        </div>
+
     </div>
+
+</div>
+
 </body>
 </html>
