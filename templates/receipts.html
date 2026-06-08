@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Fiş Geçmişi</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h2>📋 Fiş Geçmişi</h2>
+
+    <div class="receipt-list">
+
+        {% for fis in fisler %}
+
+        <div class="receipt-card">
+
+            <div class="receipt-header">
+                <h3>{{ fis[4] }}</h3>
+                <span>#{{ fis[0] }}</span>
+            </div>
+
+            <p>📅 Tarih: {{ fis[1] }}</p>
+
+            <p>🛒 Kategori: {{ fis[3] }}</p>
+
+            <p>💰 Toplam: {{ fis[2] }} TL</p>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    <br>
+
+    <a href="/dashboard" class="btn">
+        Panele Dön
+    </a>
+
+</div>
+
+</body>
+</html>
