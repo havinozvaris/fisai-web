@@ -38,16 +38,17 @@ def init_db():
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS fisler (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    tarih TEXT,
-    toplam REAL,
-    kategori TEXT,
-    magaza TEXT,
-    kdv REAL,
-    dosya_adi TEXT,
-    eklenme_tarihi TEXT
-)
-""")
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tarih TEXT,
+        toplam REAL,
+        kategori TEXT,
+        magaza TEXT,
+        kdv REAL,
+        dosya_adi TEXT,
+        eklenme_tarihi TEXT,
+        duzeltilmis INTEGER DEFAULT 0
+    )
+    """)
 
     conn.commit()
     conn.close()
@@ -482,6 +483,14 @@ def clear_dashboard():
     session.pop("ai_yorum", None)
 
     return redirect(url_for("dashboard"))
+
+
+
+
+
+
+
+
 
 # -------------------------
 # ÇALIŞTIR
