@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import os
 import re
 import cv2
 import sqlite3
 import pytesseract
+import uuid
 
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
@@ -105,7 +106,12 @@ def magaza_bul(ocr_text):
 
 def resmi_iyilestir(dosya_yolu):
 
+    print("Dosya yolu:", dosya_yolu)
+
     img = cv2.imread(dosya_yolu)
+
+    if img is None:
+        raise Exception(f"Resim okunamadı -> {dosya_yolu}")
 
     gri = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -240,27 +246,39 @@ def dashboard():
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
 
-    message = None
-    ocr_text = None
-    analiz = None
-
     if request.method == "POST":
+
+        print("FILES:", request.files)
 
         file = request.files.get("receipt")
 
-        if file and file.filename != "":
+        if file is None:
+            print("DOSYA GELMEDI")
+            return redirect(url_for("dashboard"))
 
-            os.makedirs(
-                "uploads",
-                exist_ok=True
-            )
+        print("FILENAME:", file.filename)
 
-            file_path = os.path.join(
-                "uploads",
-                file.filename
-            )
+        if file.filename == "":
+            print("DOSYA SECILMEDI")
+            return redirect(url_for("dashboard"))
 
-            file.save(file_path)
+        os.makedirs(
+            "uploads",
+            exist_ok=True
+        )
+
+        dosya_adi = str(uuid.uuid4()) + ".png"
+
+        file_path = os.path.join(
+            "uploads",
+            dosya_adi
+        )
+
+        file.save(file_path)
+
+        print("KAYDEDILDI:", file_path)
+
+        try:
 
             temiz_resim = resmi_iyilestir(file_path)
 
@@ -270,12 +288,14 @@ def upload():
                 config="--oem 3 --psm 6"
             )
 
+            print("OCR SONUCU:")
+            print(ocr_text)
+
             analiz = fis_bilgilerini_cek(ocr_text)
 
             kategori = kategori_bul(ocr_text)
 
             analiz["magaza"] = magaza_bul(ocr_text)
-
             analiz["kategori"] = kategori
 
             conn = sqlite3.connect("fisler.db")
@@ -298,14 +318,16 @@ def upload():
             conn.commit()
             conn.close()
 
-            message = "Fiş başarıyla yüklendi ve analiz edildi!"
+            print("VERITABANINA KAYDEDILDI")
 
-    return render_template(
-        "upload.html",
-        message=message,
-        ocr_text=ocr_text,
-        analiz=analiz
-    )
+        except Exception as e:
+
+            print("HATA:")
+            print(e)
+
+        return redirect(url_for("dashboard"))
+
+    return redirect(url_for("dashboard"))
 
 # -------------------------
 # FİŞ GEÇMİŞİ
