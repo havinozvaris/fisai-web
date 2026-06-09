@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Fiş Düzenle</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h2>✏️ Fiş Düzenle</h2>
+
+    <form method="POST">
+
+        <input
+            type="text"
+            name="tarih"
+            value="{{ fis[1] }}"
+            placeholder="Tarih"
+        >
+
+        <br><br>
+
+        <input
+            type="text"
+            name="toplam"
+            value="{{ fis[2] }}"
+            placeholder="Toplam"
+        >
+
+        <br><br>
+
+        <input
+            type="text"
+            name="kategori"
+            value="{{ fis[3] }}"
+            placeholder="Kategori"
+        >
+
+        <br><br>
+
+        <input
+            type="text"
+            name="magaza"
+            value="{{ fis[4] }}"
+            placeholder="Mağaza"
+        >
+
+        <br><br>
+
+        <button type="submit" class="btn">
+            Kaydet
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

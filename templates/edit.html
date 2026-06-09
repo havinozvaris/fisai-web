@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Fiş Düzenle</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>✏️ Fiş Düzenle</h2>
+
+    <div class="receipt-card">
+
+        <form method="POST">
+
+            <label>📅 Tarih</label>
+            <input type="text" name="tarih" value="{{ fis[1] }}">
+
+            <label>🛒 Mağaza</label>
+            <input type="text" name="magaza" value="{{ fis[4] }}">
+
+            <label>📂 Kategori</label>
+            <input type="text" name="kategori" value="{{ fis[3] }}">
+
+            <label>💰 Toplam</label>
+            <input type="text" name="toplam" value="{{ fis[2] }}">
+
+            <br><br>
+
+            <button type="submit" class="btn">
+                💾 Kaydet
+            </button>
+
+            <a href="/receipts" class="btn logout-btn">
+                ↩️ Geri Dön
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

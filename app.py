@@ -6,9 +6,21 @@ import sqlite3
 import pytesseract
 import uuid
 from openai import OpenAI
-from dotenv import load_dotenv
+
 #pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+
+api_key = os.getenv("OPENAI_API_KEY")
+
+print("DEBUG KEY:", api_key)
+
+from openai import OpenAI
+client = OpenAI(api_key=api_key)
 app = Flask(__name__)
 app.secret_key = "fisai123"
 
@@ -16,6 +28,8 @@ load_dotenv()
 client = OpenAI(
     api_key= os.getenv("OPENAI_API_KEY")
 )
+
+
 
 
 def init_db():
@@ -426,6 +440,39 @@ def delete_all():
     conn.close()
 
     return redirect(url_for("receipts"))
+
+
+@app.route("/edit/<int:id>", methods=["GET", "POST"])
+def edit_receipt(id):
+
+    conn = sqlite3.connect("fisler.db")
+    cursor = conn.cursor()
+
+    if request.method == "POST":
+
+        tarih = request.form["tarih"]
+        toplam = request.form["toplam"]
+        magaza = request.form["magaza"]
+        kategori = request.form["kategori"]
+
+        cursor.execute("""
+            UPDATE fisler
+            SET tarih=?, toplam=?, magaza=?, kategori=?, duzeltilmis=1
+            WHERE id=?
+        """, (tarih, toplam, magaza, kategori, id))
+
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for("receipts"))
+
+    cursor.execute("SELECT * FROM fisler WHERE id=?", (id,))
+    fis = cursor.fetchone()
+
+    conn.close()
+
+    return render_template("edit.html", fis=fis)
+
 
 @app.route("/clear_dashboard")
 def clear_dashboard():
