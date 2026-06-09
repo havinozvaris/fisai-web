@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 import os
 import re
 import cv2
@@ -9,6 +9,7 @@ import uuid
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 app = Flask(__name__)
+app.secret_key = "fisai123"
 
 # -------------------------
 # VERİTABANI
@@ -143,23 +144,35 @@ def resmi_iyilestir(dosya_yolu):
 
 def fis_bilgilerini_cek(ocr_text):
 
-    tarih = re.search(
-        r"\d{2}[./-]\d{2}[./-]\d{4}",
-        ocr_text
-    )
-
-    tutarlar = re.findall(
-        r"\d{1,3}(?:[.,]\d{3})*[.,]\d{2}",
-        ocr_text
-    )
-
+    tarih = "Bulunamadı"
     toplam = "Bulunamadı"
 
+    tarih_match = re.search(
+        r"\d{2}[./]\d{2}[./]\d{4}",
+        ocr_text
+    )
+
+    if tarih_match:
+        tarih = tarih_match.group()
+
+    tutarlar = re.findall(
+        r"\d+[.,]\d{2}",
+        ocr_text
+    )
+
     if tutarlar:
-        toplam = tutarlar[-1]
+        try:
+            toplam = max(
+                tutarlar,
+                key=lambda x: float(
+                    x.replace(",", ".")
+                )
+            )
+        except:
+            toplam = tutarlar[-1]
 
     return {
-        "tarih": tarih.group() if tarih else "Bulunamadı",
+        "tarih": tarih,
         "toplam": toplam
     }
 
@@ -229,19 +242,18 @@ def dashboard():
     ]
 
     return render_template(
-        "dashboard.html",
-        toplam_fis=toplam_fis,
-        toplam_harcama=round(toplam_harcama, 2),
-        market=market,
-        yeme_icme=yeme_icme,
-        teknoloji=teknoloji,
-        kategori_etiketleri=kategori_etiketleri,
-        kategori_sayilari=kategori_sayilari
-    )
+    "dashboard.html",
+    toplam_fis=toplam_fis,
+    toplam_harcama=round(toplam_harcama, 2),
+    market=market,
+    yeme_icme=yeme_icme,
+    teknoloji=teknoloji,
+    kategori_etiketleri=kategori_etiketleri,
+    kategori_sayilari=kategori_sayilari,
 
-# -------------------------
-# FİŞ YÜKLE
-# -------------------------
+    ocr_text=session.get("ocr_text"),
+    analiz=session.get("analiz")
+)
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
@@ -297,6 +309,10 @@ def upload():
 
             analiz["magaza"] = magaza_bul(ocr_text)
             analiz["kategori"] = kategori
+
+            # DASHBOARD'DA GÖSTERMEK İÇİN
+            session["ocr_text"] = ocr_text
+            session["analiz"] = analiz
 
             conn = sqlite3.connect("fisler.db")
             cursor = conn.cursor()

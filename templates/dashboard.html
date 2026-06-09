@@ -120,17 +120,43 @@
 
     </div>
 
-    <div class="action-buttons">
+</div>
 
-        <a href="/receipts" class="btn">
-            📜 Fiş Geçmişi
-        </a>
+    {% if analiz %}
 
-        <a href="/" class="btn logout-btn">
-            🚪 Çıkış Yap
-        </a>
+<div class="result-box">
 
+    <h2>📄 Son OCR Analizi</h2>
+
+    <div class="summary-item">
+        <span>Tarih</span>
+        <strong>{{ analiz["tarih"] }}</strong>
     </div>
+
+    <div class="summary-item">
+        <span>Toplam Tutar</span>
+        <strong>{{ analiz["toplam"] }} TL</strong>
+    </div>
+
+    <div class="summary-item">
+        <span>Mağaza</span>
+        <strong>{{ analiz["magaza"] }}</strong>
+    </div>
+
+    <div class="summary-item">
+        <span>Kategori</span>
+        <strong>{{ analiz["kategori"] }}</strong>
+    </div>
+
+    <h3 style="margin-top:25px;">
+        🔍 OCR Tarafından Okunan Metin
+    </h3>
+
+    <pre class="ocr-box">{{ ocr_text }}</pre>
+
+</div>
+
+{% endif %}
 
 </div>
 

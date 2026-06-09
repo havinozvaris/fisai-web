@@ -722,3 +722,22 @@ RESPONSIVE
         font-size:42px;
     }
 }
+
+.result-box{
+    margin-top:30px;
+    background:#fff;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.ocr-box{
+    margin-top:15px;
+    background:#111827;
+    color:white;
+    padding:20px;
+    border-radius:12px;
+    white-space:pre-wrap;
+    max-height:400px;
+    overflow-y:auto;
+}
