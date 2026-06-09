@@ -1,93 +1,62 @@
 <!DOCTYPE html>
-
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kayıt Ol - FisAI</title>
-
-
-<link rel="stylesheet" href="/static/css/style.css">
-
-
+    <title>Fiş Geçmişi</title>
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
 
-<div class="split-auth">
+<div class="container">
 
+    <h2>📋 Fiş Geçmişi</h2>
 
-<div class="auth-left">
+    <div style="margin-bottom:25px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
 
-    <div class="brand-box">
+        <a href="/dashboard" class="btn">
+            📊 Panele Dön
+        </a>
 
-        <h1>📊 FisAI</h1>
-
-        <h2>
-            Harcamalarınızı
-            Kontrol Altına Alın
-        </h2>
-
-        <p>
-            Fişlerinizi yükleyin, harcamalarınızı analiz edin,
-            bütçenizi daha akıllı yönetin.
-        </p>
+        <a
+            href="/delete_all"
+            class="btn logout-btn"
+            onclick="return confirm('Tüm fiş geçmişini silmek istediğinize emin misiniz?')"
+        >
+            🗑️ Tüm Geçmişi Temizle
+        </a>
 
     </div>
 
-</div>
+    <div class="receipt-list">
 
-<div class="auth-right">
+        {% for fis in fisler %}
 
-    <div class="login-card">
+        <div class="receipt-card">
 
-        <h2>Hesap Oluştur 🚀</h2>
+            <div class="receipt-header">
+                <h3>{{ fis[4] }}</h3>
+                <span>#{{ fis[0] }}</span>
+            </div>
 
-        <p>
-            Birkaç saniyede ücretsiz hesabınızı oluşturun.
-        </p>
+            <p>📅 Tarih: {{ fis[1] }}</p>
+            <p>🛒 Kategori: {{ fis[3] }}</p>
+            <p>💰 Toplam: {{ fis[2] }} TL</p>
 
-        <form action="/login" method="GET">
+            <br>
 
-            <input
-                type="text"
-                placeholder="Ad Soyad"
-                required
+            <a
+                href="/delete/{{ fis[0] }}"
+                class="btn logout-btn"
+                onclick="return confirm('Bu fişi silmek istediğinize emin misiniz?')"
             >
-
-            <input
-                type="email"
-                placeholder="E-posta adresiniz"
-                required
-            >
-
-            <input
-                type="password"
-                placeholder="Şifreniz"
-                required
-            >
-
-            <button
-                type="submit"
-                class="auth-btn"
-            >
-                Kayıt Ol
-            </button>
-
-        </form>
-
-        <div class="auth-footer">
-
-            Zaten hesabın var mı?
-
-            <a href="/login">
-                Giriş Yap
+                🗑️ Bu Fişi Sil
             </a>
 
         </div>
 
-    </div>
+        {% endfor %}
 
-</div>
+    </div>
 
 </div>
 

@@ -11,6 +11,12 @@
 
     <h2>📋 Fiş Geçmişi</h2>
 
+    {% if session.get("mesaj") %}
+    <div class="success-box">
+        {{ session.get("mesaj") }}
+    </div>
+    {% endif %}
+
     <div class="receipt-list">
 
         {% for fis in fisler %}
@@ -36,9 +42,21 @@
 
     <br>
 
-    <a href="/dashboard" class="btn">
-        Panele Dön
-    </a>
+    <div style="display:flex; gap:15px; justify-content:center;">
+
+        <a href="/dashboard" class="btn">
+            📊 Panele Dön
+        </a>
+
+        <a
+    href="/delete_all"
+    class="btn logout-btn"
+    onclick="return confirm('Tüm fiş geçmişini silmek istediğinize emin misiniz?')"
+>
+    🗑️ Tüm Geçmişi Temizle
+</a>
+        
+    </div>
 
 </div>
 

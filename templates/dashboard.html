@@ -5,7 +5,6 @@
     <title>Akıllı Fiş Analiz</title>
 
     <link rel="stylesheet" href="/static/css/style.css">
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -16,40 +15,41 @@
 
     <div class="upload-hero">
 
-    <div class="upload-hero-icon">
-        📸
-    </div>
+        <div class="upload-hero-icon">
+            📸
+        </div>
 
-    <h2>Fiş Fotoğrafı Yükle</h2>
+        <h2>Fiş Fotoğrafı Yükle</h2>
 
-    <p>
-        Telefon, galeri veya dosya yöneticisinden fiş seçip
-        anında analiz ettirebilirsiniz.
-    </p>
+        <p>
+            Telefon, galeri veya dosya yöneticisinden fiş seçip
+            anında analiz ettirebilirsiniz.
+        </p>
 
-    <form
-        action="/upload"
-        method="POST"
-        enctype="multipart/form-data"
-    >
-
-        <input
-            type="file"
-            name="receipt"
-            accept="image/*"
-            capture="environment"
-            class="file-input"
+        <form
+            action="/upload"
+            method="POST"
+            enctype="multipart/form-data"
         >
 
-        <br>
+            <input
+                type="file"
+                name="receipt"
+                accept="image/*"
+                capture="environment"
+                class="file-input"
+                required
+            >
 
-        <button type="submit" class="btn">
-            🚀 Analizi Başlat
-        </button>
+            <br>
 
-    </form>
+            <button type="submit" class="btn">
+                🚀 Analizi Başlat
+            </button>
 
-</div>
+        </form>
+
+    </div>
 
     <div class="stats-container">
 
@@ -86,9 +86,9 @@
 
             <h3>Kategori Dağılımı</h3>
 
-           <div class="chart-wrapper">
-    <canvas id="kategoriGrafik"></canvas>
-</div>
+            <div class="chart-wrapper">
+                <canvas id="kategoriGrafik"></canvas>
+            </div>
 
         </div>
 
@@ -120,43 +120,74 @@
 
     </div>
 
-</div>
-
     {% if analiz %}
 
-<div class="result-box">
+    <div class="result-box">
 
-    <h2>📄 Son OCR Analizi</h2>
+        <h2>📄 Son OCR Analizi</h2>
 
-    <div class="summary-item">
-        <span>Tarih</span>
-        <strong>{{ analiz["tarih"] }}</strong>
+        <div class="summary-item">
+            <span>Tarih</span>
+            <strong>{{ analiz["tarih"] }}</strong>
+        </div>
+
+        <div class="summary-item">
+            <span>Toplam Tutar</span>
+            <strong>{{ analiz["toplam"] }} TL</strong>
+        </div>
+
+        <div class="summary-item">
+            <span>Mağaza</span>
+            <strong>{{ analiz["magaza"] }}</strong>
+        </div>
+
+        <div class="summary-item">
+            <span>Kategori</span>
+            <strong>{{ analiz["kategori"] }}</strong>
+        </div>
+
+        <h3 style="margin-top:25px;">
+            🔍 OCR Tarafından Okunan Metin
+        </h3>
+
+        <pre class="ocr-box">{{ ocr_text }}</pre>
+
     </div>
 
-    <div class="summary-item">
-        <span>Toplam Tutar</span>
-        <strong>{{ analiz["toplam"] }} TL</strong>
+    {% endif %}
+
+    {% if ai_yorum %}
+
+    <div class="result-box">
+
+        <h2>🤖 Yapay Zeka Yorumu</h2>
+
+        <pre class="ocr-box">{{ ai_yorum }}</pre>
+
     </div>
 
-    <div class="summary-item">
-        <span>Mağaza</span>
-        <strong>{{ analiz["magaza"] }}</strong>
+    {% endif %}
+
+    <div class="action-buttons">
+
+        <a href="/receipts" class="btn">
+            📜 Fiş Geçmişi
+        </a>
+
+        <a
+            href="/clear_dashboard"
+            class="btn"
+            onclick="return confirm('Ekrandaki son analiz temizlensin mi?')"
+            style="background:#f59e0b;"
+        >
+            🧹 Son Analizi Temizle
+        </a>
+
+        <a href="/" class="btn logout-btn">
+            🚪 Çıkış Yap
+        </a>
+
     </div>
-
-    <div class="summary-item">
-        <span>Kategori</span>
-        <strong>{{ analiz["kategori"] }}</strong>
-    </div>
-
-    <h3 style="margin-top:25px;">
-        🔍 OCR Tarafından Okunan Metin
-    </h3>
-
-    <pre class="ocr-box">{{ ocr_text }}</pre>
-
-</div>
-
-{% endif %}
 
 </div>
 

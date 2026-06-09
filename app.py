@@ -5,15 +5,18 @@ import cv2
 import sqlite3
 import pytesseract
 import uuid
-
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+from openai import OpenAI
+from dotenv import load_dotenv
+#pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 app = Flask(__name__)
 app.secret_key = "fisai123"
 
-# -------------------------
-# VERİTABANI
-# -------------------------
+load_dotenv()
+client = OpenAI(
+    api_key= os.getenv("OPENAI_API_KEY")
+)
+
 
 def init_db():
     conn = sqlite3.connect("fisler.db")
@@ -37,9 +40,6 @@ def init_db():
 
 init_db()
 
-# -------------------------
-# KATEGORİ BUL
-# -------------------------
 
 def kategori_bul(ocr_text):
 
@@ -101,9 +101,7 @@ def magaza_bul(ocr_text):
 
     return "Bilinmiyor"
 
-# -------------------------
-# RESİM İYİLEŞTİRME
-# -------------------------
+
 
 def resmi_iyilestir(dosya_yolu):
 
@@ -176,6 +174,29 @@ def fis_bilgilerini_cek(ocr_text):
         "toplam": toplam
     }
 
+def ai_fis_analizi(ocr_text):
+
+    prompt = f"""
+Aşağıdaki OCR ile okunmuş fiş metnini analiz et.
+
+Cevabı markdown kullanmadan, sadece şu formatta ver:
+
+Mağaza: ...
+Tarih: ...
+Toplam tutar: ...
+Kategori: ...
+Harcama yorumu: ...
+
+Fiş metni:
+{ocr_text}
+"""
+
+    response = client.responses.create(
+        model="gpt-4.1-mini",
+        input=prompt
+    )
+
+    return response.output_text
 # -------------------------
 # SAYFALAR
 # -------------------------
@@ -252,7 +273,8 @@ def dashboard():
     kategori_sayilari=kategori_sayilari,
 
     ocr_text=session.get("ocr_text"),
-    analiz=session.get("analiz")
+    analiz=session.get("analiz"),
+    ai_yorum=session.get("ai_yorum")
 )
 
 @app.route("/upload", methods=["GET", "POST"])
@@ -302,6 +324,13 @@ def upload():
 
             print("OCR SONUCU:")
             print(ocr_text)
+
+            ai_yorum = ai_fis_analizi(ocr_text)
+
+            session["ai_yorum"] = ai_yorum
+
+            print("AI YORUM:")
+            print(ai_yorum)
 
             analiz = fis_bilgilerini_cek(ocr_text)
 
@@ -367,6 +396,45 @@ def receipts():
         "receipts.html",
         fisler=fisler
     )
+
+@app.route("/delete/<int:id>")
+def delete_receipt(id):
+
+    conn = sqlite3.connect("fisler.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM fisler WHERE id=?",
+        (id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("receipts"))
+
+
+@app.route("/delete_all")
+def delete_all():
+
+    conn = sqlite3.connect("fisler.db")
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM fisler")
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("receipts"))
+
+@app.route("/clear_dashboard")
+def clear_dashboard():
+
+    session.pop("ocr_text", None)
+    session.pop("analiz", None)
+    session.pop("ai_yorum", None)
+
+    return redirect(url_for("dashboard"))
 
 # -------------------------
 # ÇALIŞTIR
