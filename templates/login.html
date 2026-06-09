@@ -9,52 +9,72 @@
 </head>
 <body>
 
-<div class="auth-page">
+<div class="split-auth">
 
-    <div class="auth-container">
+    <div class="auth-left">
 
-        <div class="auth-icon">
-            🔐
+        <div class="brand-box">
+
+            <h1>📊 FisAI</h1>
+
+            <h2>
+                Harcamalarınızı
+                Yapay Zeka ile
+                Yönetin
+            </h2>
+
+            <p>
+                Fişlerinizi yükleyin,
+                kategorileri otomatik çıkarın,
+                harcamalarınızı analiz edin.
+            </p>
+
         </div>
 
-        <h2 class="auth-title">
-            Tekrar Hoş Geldin
-        </h2>
+    </div>
 
-        <p class="auth-subtitle">
-            Hesabına giriş yaparak fiş analizlerine devam et.
-        </p>
+    <div class="auth-right">
 
-        <form action="/dashboard" method="GET">
+        <div class="login-card">
 
-            <input
-                type="email"
-                placeholder="E-posta adresiniz"
-                required
-            >
+            <h2>Tekrar Hoş Geldin 👋</h2>
 
-            <input
-                type="password"
-                placeholder="Şifreniz"
-                required
-            >
+            <p>
+                Hesabına giriş yaparak analizlerine devam et.
+            </p>
 
-            <button
-                type="submit"
-                class="auth-btn"
-            >
-                Giriş Yap
-            </button>
+            <form action="/dashboard" method="GET">
 
-        </form>
+                <input
+                    type="email"
+                    placeholder="E-posta adresiniz"
+                    required
+                >
 
-        <div class="auth-footer">
+                <input
+                    type="password"
+                    placeholder="Şifreniz"
+                    required
+                >
 
-            Hesabın yok mu?
+                <button
+                    type="submit"
+                    class="auth-btn"
+                >
+                    Giriş Yap
+                </button>
 
-            <a href="/register">
-                Kayıt Ol
-            </a>
+            </form>
+
+            <div class="auth-footer">
+
+                Hesabın yok mu?
+
+                <a href="/register">
+                    Kayıt Ol
+                </a>
+
+            </div>
 
         </div>
 

@@ -3,92 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FisAI - Akıllı Fiş Analizi</title>
+    <title>FisAI - Yapay Zeka Destekli Fiş Analizi</title>
 
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
 
-<div class="hero-container">
+<nav class="navbar">
 
-    <div class="hero-left">
+    <div class="logo">
+        📊 FisAI
+    </div>
 
-        <h1>📊 FisAI</h1>
+    <div class="nav-buttons">
 
-        <h2>
-            OCR ve Yapay Zeka Destekli
-            Harcama Analiz Sistemi
-        </h2>
+        <a href="/login" class="nav-login">
+            Giriş Yap
+        </a>
 
+        <a href="/register" class="nav-register">
+            Ücretsiz Başla
+        </a>
+
+    </div>
+
+</nav>
+
+<section class="hero">
+
+    <div class="hero-badge">
+        🚀 Yapay Zeka Destekli OCR Sistemi
+    </div>
+
+    <h1>
+        Fişlerinizi Akıllıca<br>
+        Analiz Edin
+    </h1>
+
+    <p>
+        OCR ve yapay zeka teknolojisi ile fişlerden mağaza,
+        kategori ve toplam harcama bilgilerini otomatik çıkarın.
+        Harcamalarınızı tek panelden yönetin.
+    </p>
+
+    <div class="hero-buttons">
+
+        <a href="/register" class="primary-btn">
+            Ücretsiz Başla
+        </a>
+
+        <a href="/login" class="secondary-btn-dark">
+            Giriş Yap
+        </a>
+
+    </div>
+
+</section>
+
+<section class="features">
+
+    <div class="feature-card">
+        <div class="feature-icon">📄</div>
+        <h3>OCR Okuma</h3>
         <p>
-            Fişlerinizi saniyeler içinde analiz edin.
-            Mağaza, kategori ve toplam harcamalarınızı
-            otomatik olarak tespit edin.
+            Fiş metinlerini otomatik olarak algılar
+            ve işler.
         </p>
+    </div>
 
-        <div class="hero-buttons">
+    <div class="feature-card">
+        <div class="feature-icon">🏪</div>
+        <h3>Mağaza Tanıma</h3>
+        <p>
+            Migros, A101, BİM ve diğer mağazaları
+            otomatik tespit eder.
+        </p>
+    </div>
 
-            <a href="/login" class="btn">
-                Giriş Yap
-            </a>
+    <div class="feature-card">
+        <div class="feature-icon">🛒</div>
+        <h3>Kategori Analizi</h3>
+        <p>
+            Harcamaları Market, Teknoloji ve
+            Yeme İçme olarak ayırır.
+        </p>
+    </div>
 
-            <a href="/register" class="btn secondary-btn">
-                Kayıt Ol
-            </a>
+    <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Raporlama</h3>
+        <p>
+            Tüm harcamalarınızı grafiklerle
+            analiz eder.
+        </p>
+    </div>
 
+</section>
+
+<section class="why-us">
+
+    <h2>Neden FisAI?</h2>
+
+    <p class="why-text">
+        FisAI, OCR ve yapay zeka teknolojilerini kullanarak
+        fişlerinizi anlamlı verilere dönüştürür.
+    </p>
+
+    <div class="why-grid">
+
+        <div class="why-card">
+            <h3>⚡ Hızlı</h3>
+            <p>
+                Analiz işlemleri saniyeler içerisinde tamamlanır.
+            </p>
+        </div>
+
+        <div class="why-card">
+            <h3>🤖 Akıllı</h3>
+            <p>
+                Mağaza ve kategori bilgilerini otomatik belirler.
+            </p>
+        </div>
+
+        <div class="why-card">
+            <h3>📈 Takip</h3>
+            <p>
+                Harcamalarınızı tek panelden takip etmenizi sağlar.
+            </p>
         </div>
 
     </div>
 
-    <div class="hero-right">
+</section>
 
-        <div class="phone-card">
+<footer class="footer">
 
-            <div class="phone-step">
-                📸 Fiş Fotoğrafı
-            </div>
+    <p>
+        © 2026 FisAI • Yapay Zeka Destekli Fiş Analiz Sistemi
+    </p>
 
-            <div class="arrow">
-                ↓
-            </div>
-
-            <div class="phone-step">
-                🤖 OCR Analizi
-            </div>
-
-            <div class="arrow">
-                ↓
-            </div>
-
-            <div class="phone-step">
-                📊 Harcama Raporu
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<div class="features">
-
-    <div class="feature-card">
-        📄 OCR Okuma
-    </div>
-
-    <div class="feature-card">
-        🏪 Mağaza Tanıma
-    </div>
-
-    <div class="feature-card">
-        🛒 Kategori Analizi
-    </div>
-
-    <div class="feature-card">
-        📈 Harcama Takibi
-    </div>
-
-</div>
+</footer>
 
 </body>
 </html>
