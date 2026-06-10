@@ -32,44 +32,24 @@
     enctype="multipart/form-data"
 >
 
-    <div class="upload-buttons">
-
-        <button
-            type="button"
-            class="btn"
-            onclick="document.getElementById('cameraInput').click()"
-        >
-            📸 Kamera Aç
-        </button>
-
-        <button
-            type="button"
-            class="btn"
-            onclick="document.getElementById('galleryInput').click()"
-        >
-            🖼️ Galeriden Seç
-        </button>
-
-    </div>
-
     <input
         type="file"
-        id="cameraInput"
-        name="receipt"
-        accept="image/*"
-        capture="environment"
-        style="display:none"
-    >
-
-    <input
-        type="file"
-        id="galleryInput"
+        id="receipt"
         name="receipt"
         accept="image/*"
         style="display:none"
+        required
     >
 
-    <p id="selectedFile" style="margin-top:15px;color:#94a3b8;">
+    <button
+        type="button"
+        class="btn"
+        onclick="document.getElementById('receipt').click()"
+    >
+        📸 Fiş Seç
+    </button>
+
+    <p id="selectedFile">
         Henüz dosya seçilmedi
     </p>
 
@@ -82,17 +62,7 @@
 </form>
 
 <script>
-
-document.getElementById("cameraInput").addEventListener("change", function() {
-
-    if(this.files.length > 0){
-        document.getElementById("selectedFile").innerText =
-            "📄 " + this.files[0].name;
-    }
-
-});
-
-document.getElementById("galleryInput").addEventListener("change", function() {
+document.getElementById("receipt").addEventListener("change", function(){
 
     if(this.files.length > 0){
         document.getElementById("selectedFile").innerText =
@@ -100,7 +70,6 @@ document.getElementById("galleryInput").addEventListener("change", function() {
     }
 
 });
-
 </script>
 
     </div>
