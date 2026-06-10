@@ -225,6 +225,22 @@ body {
     border-bottom: none !important;
 }
 
+
+.receipt-list{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.receipt-card{
+    background: #fff;
+    border-radius: 18px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+
+
 /* RESPONSIVE DESTEĞİ */
 @media(max-width: 1024px) {
     .cards { grid-template-columns: repeat(2, 1fr); }
