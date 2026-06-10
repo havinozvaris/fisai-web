@@ -534,14 +534,8 @@ DASHBOARD
     color:#94a3b8;
 }
 
-
-/* Hızlı Özet */
-.summary-box .summary-item strong {
-    color: #94a3b8;
-}
-
 .summary-item strong{
-    color:rgb(2, 0, 0);
+    color:white;
 }
 
 /* Buttons */
@@ -731,33 +725,141 @@ RESPONSIVE
 
 .result-box{
     margin-top:30px;
-    background:#dfe9ff;
+    background:#fff;
     padding:30px;
     border-radius:20px;
-    border:1px solid #c7d8ff;
-    box-shadow:0 10px 25px rgba(79,70,229,.10);
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
 }
 
 .ocr-box{
     margin-top:15px;
-    background:white;
-    color:#1e293b;
+    background:#111827;
+    color:white;
     padding:20px;
     border-radius:12px;
-    border:1px solid #dbe4ff;
     white-space:pre-wrap;
     max-height:400px;
     overflow-y:auto;
 }
 
-.result-box h2,
-.result-box h3{
-    color:#304ffe;
+/* =========================
+TOPBAR
+========================= */
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
 }
 
-.result-box .summary-item{
-    background:white;
-    padding:12px 15px;
-    border-radius:10px;
-    margin-bottom:10px;
+.topbar .logo{
+    color:white;
+    font-size:40px;
+    font-weight:700;
+}
+
+.menu-btn{
+    width:52px;
+    height:52px;
+    border:none;
+    border-radius:14px;
+    background:#4f46e5;
+    color:white;
+    font-size:26px;
+    cursor:pointer;
+}
+
+.menu-btn:hover{
+    background:#4338ca;
+}
+
+/* =========================
+MOBILE MENU
+========================= */
+
+.mobile-menu{
+    position:fixed;
+    top:0;
+    right:-320px;
+    width:280px;
+    height:100vh;
+    background:#111827;
+    z-index:9999;
+    padding:25px;
+    transition:.35s;
+    border-left:1px solid #2b3850;
+    display:flex;
+    flex-direction:column;
+}
+
+.show-menu{
+    right:0;
+}
+
+.menu-header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:30px;
+    padding-bottom:20px;
+    border-bottom:1px solid #2b3850;
+}
+
+.menu-avatar{
+    width:50px;
+    height:50px;
+    border-radius:50%;
+    background:#4f46e5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+}
+
+.menu-header h3{
+    color:white;
+    margin-bottom:3px;
+}
+
+.menu-header span{
+    color:#94a3b8;
+    font-size:14px;
+}
+
+.mobile-menu a{
+    text-decoration:none;
+    color:white;
+    background:#182235;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:12px;
+    transition:.3s;
+}
+
+.mobile-menu a:hover{
+    background:#22304b;
+}
+
+/* Mobil */
+
+@media(max-width:768px){
+
+    .topbar .logo{
+        font-size:28px;
+    }
+
+    .menu-btn{
+        width:45px;
+        height:45px;
+        font-size:22px;
+    }
+
+    .dashboard-container{
+        width:95%;
+    }
+
+    .stats-container{
+        grid-template-columns:repeat(2,1fr);
+    }
 }

@@ -11,7 +11,42 @@
 
 <div class="dashboard-container">
 
-    <h1>📊 Akıllı Fiş Analiz</h1>
+    <div class="topbar">
+
+        <div class="logo">
+            📊 Akıllı Fiş Analiz
+        </div>
+
+        <button id="menuBtn" class="menu-btn">
+            ☰
+        </button>
+
+    </div>
+
+    <div id="mobileMenu" class="mobile-menu">
+
+        <div class="menu-header">
+            <div class="menu-avatar">👤</div>
+            <div>
+                <h3>Kullanıcı Paneli</h3>
+                <span>Akıllı Fiş Analiz</span>
+            </div>
+        </div>
+
+        <a href="/receipts">
+            📜 Fiş Geçmişi
+        </a>
+
+        <a href="/clear_dashboard"
+           onclick="return confirm('Ekrandaki son analiz temizlensin mi?')">
+            🧹 Son Analizi Temizle
+        </a>
+
+        <a href="/">
+            🚪 Çıkış Yap
+        </a>
+
+    </div>
 
     <div class="upload-hero">
 
@@ -29,8 +64,7 @@
         <form
             action="/upload"
             method="POST"
-            enctype="multipart/form-data"
-        >
+            enctype="multipart/form-data">
 
             <input
                 type="file"
@@ -38,8 +72,7 @@
                 accept="image/*"
                 capture="environment"
                 class="file-input"
-                required
-            >
+                required>
 
             <br>
 
@@ -168,27 +201,6 @@
 
     {% endif %}
 
-    <div class="action-buttons">
-
-        <a href="/receipts" class="btn">
-            📜 Fiş Geçmişi
-        </a>
-
-        <a
-            href="/clear_dashboard"
-            class="btn"
-            onclick="return confirm('Ekrandaki son analiz temizlensin mi?')"
-            style="background:#f59e0b;"
-        >
-            🧹 Son Analizi Temizle
-        </a>
-
-        <a href="/" class="btn logout-btn">
-            🚪 Çıkış Yap
-        </a>
-
-    </div>
-
 </div>
 
 <script>
@@ -217,6 +229,13 @@ new Chart(ctx, {
             }
         }
     }
+});
+
+const menuBtn = document.getElementById("menuBtn");
+const mobileMenu = document.getElementById("mobileMenu");
+
+menuBtn.addEventListener("click", () => {
+    mobileMenu.classList.toggle("show-menu");
 });
 
 </script>
