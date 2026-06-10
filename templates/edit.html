@@ -2,47 +2,234 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Fiş Düzenle</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiş Düzenle - FisAI</title>
+    <style>
+       
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
+        body {
+            background: #0a0f1c; /* FisAI Koyu Arka Planı */
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .edit-container {
+            width: 100%;
+            max-width: 460px; /* Kutunun ekranda kibar durması için genişlik */
+        }
+
+        /* Yuvarlatılmış Modern Kart */
+        .edit-card-modern {
+            background: #111827; /* FisAI Kart Rengi */
+            border: 1px solid #1e293b;
+            border-radius: 24px; /* Kenarları yumuşatma */
+            padding: 35px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .edit-header-modern {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .icon-circle {
+            width: 54px;
+            height: 54px;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin: 0 auto 12px auto;
+        }
+
+        .edit-header-modern h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #fff;
+        }
+
+        .edit-header-modern p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .edit-form-modern {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            color: #cbd5e1;
+            font-size: 13px;
+            font-weight: 600;
+            padding-left: 4px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper .icon {
+            position: absolute;
+            left: 14px;
+            font-size: 16px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Giriş Kutuları Ayarları */
+        .input-wrapper input {
+            width: 100%;
+            background: #050816; /* Giriş kutusu içi siyah/koyu */
+            border: 1.5px solid #2a344a;
+            border-radius: 14px; /* Kutucuk kenarlarını yuvarlama */
+            padding: 14px 14px 14px 42px; /* İkonun üstüne binmesin diye sol padding */
+            color: #ffffff;
+            font-size: 15px;
+            transition: all 0.25s ease;
+        }
+
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #5b45fa; /* FisAI Mor Renk Odaklanması */
+            box-shadow: 0 0 0 4px rgba(91, 69, 250, 0.15);
+            background: #080d20;
+        }
+
+        /* Buton Alanı */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        /* FisAI Mor Oval Buton */
+        .btn-primary {
+            flex: 1;
+            background: #5b45fa; 
+            color: white;
+            border: none;
+            border-radius: 14px; /* Oval köşeler */
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-primary:hover {
+            background: #4a34e0;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(91, 69, 250, 0.3);
+        }
+
+        /* İptal/Geri Dön Butonu */
+        .btn-secondary {
+            flex: 1;
+            background: transparent;
+            color: #94a3b8;
+            border: 1.5px solid #2a344a;
+            border-radius: 14px;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: #475569;
+            color: #fff;
+        }
+    </style>
+</head>
 <body>
 
-<div class="container">
+    <div class="edit-container">
+        
+        <div class="edit-card-modern">
+            
+            <div class="edit-header-modern">
+                <div class="icon-circle">✏️</div>
+                <h2>Fiş Düzenle</h2>
+                <p>Fiş bilgilerini güncelle</p>
+            </div>
 
-    <h2>✏️ Fiş Düzenle</h2>
+            <form method="POST" class="edit-form-modern">
+                
+                <div class="form-group">
+                    <label>Tarih</label>
+                    <div class="input-wrapper">
+                        <span class="icon">📅</span>
+                        <input type="text" name="tarih" value="{{ fis[1] }}">
+                    </div>
+                </div>
 
-    <div class="receipt-card">
+                <div class="form-group">
+                    <label>Mağaza</label>
+                    <div class="input-wrapper">
+                        <span class="icon">🏪</span>
+                        <input type="text" name="magaza" value="{{ fis[4] }}">
+                    </div>
+                </div>
 
-        <form method="POST">
+                <div class="form-group">
+                    <label>Kategori</label>
+                    <div class="input-wrapper">
+                        <span class="icon">🏷️</span>
+                        <input type="text" name="kategori" value="{{ fis[3] }}">
+                    </div>
+                </div>
 
-            <label>📅 Tarih</label>
-            <input type="text" name="tarih" value="{{ fis[1] }}">
+                <div class="form-group">
+                    <label>Toplam Tutar</label>
+                    <div class="input-wrapper">
+                        <span class="icon">💰</span>
+                        <input type="text" name="toplam" value="{{ fis[2] }}">
+                    </div>
+                </div>
 
-            <label>🛒 Mağaza</label>
-            <input type="text" name="magaza" value="{{ fis[4] }}">
+                <div class="action-buttons">
+                    <button type="submit" class="btn-primary">
+                        Kaydet
+                    </button>
+                    <a href="/receipts" class="btn-secondary">
+                        Geri Dön
+                    </a>
+                </div>
 
-            <label>📂 Kategori</label>
-            <input type="text" name="kategori" value="{{ fis[3] }}">
-
-            <label>💰 Toplam</label>
-            <input type="text" name="toplam" value="{{ fis[2] }}">
-
-            <br><br>
-
-            <button type="submit" class="btn">
-                💾 Kaydet
-            </button>
-
-            <a href="/receipts" class="btn logout-btn">
-                ↩️ Geri Dön
-            </a>
-
-        </form>
+            </form>
+        </div>
 
     </div>
-
-</div>
 
 </body>
 </html>
