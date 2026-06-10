@@ -474,6 +474,85 @@ def edit_receipt(id):
 
     return render_template("edit.html", fis=fis)
 
+@app.route("/reports")
+def reports():
+
+    conn = sqlite3.connect("fisler.db")
+    cursor = conn.cursor()
+
+    # Toplam fiş
+    cursor.execute("SELECT COUNT(*) FROM fisler")
+    toplam_fis = cursor.fetchone()[0]
+
+    # Toplam harcama
+    cursor.execute("SELECT toplam FROM fisler")
+    tutarlar = cursor.fetchall()
+
+    toplam_harcama = 0
+
+    for t in tutarlar:
+        try:
+            toplam_harcama += float(str(t[0]).replace(",", "."))
+        except:
+            pass
+
+    # Ortalama fiş
+    ortalama = round(
+        toplam_harcama / toplam_fis,
+        2
+    ) if toplam_fis > 0 else 0
+
+    # En büyük fiş
+    en_buyuk = 0
+
+    for t in tutarlar:
+        try:
+            deger = float(str(t[0]).replace(",", "."))
+            if deger > en_buyuk:
+                en_buyuk = deger
+        except:
+            pass
+
+    # Kategoriler
+    cursor.execute("""
+        SELECT kategori, COUNT(*)
+        FROM fisler
+        GROUP BY kategori
+    """)
+
+    kategori_verileri = cursor.fetchall()
+
+    kategori_etiketleri = []
+    kategori_sayilari = []
+
+    for kategori in kategori_verileri:
+        kategori_etiketleri.append(kategori[0])
+        kategori_sayilari.append(kategori[1])
+
+    # Mağaza sıralaması
+    cursor.execute("""
+        SELECT magaza, COUNT(*)
+        FROM fisler
+        GROUP BY magaza
+        ORDER BY COUNT(*) DESC
+        LIMIT 5
+    """)
+
+    magazalar = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "reports.html",
+        toplam_fis=toplam_fis,
+        toplam_harcama=round(toplam_harcama, 2),
+        ortalama=ortalama,
+        en_buyuk=en_buyuk,
+        kategori_etiketleri=kategori_etiketleri,
+        kategori_sayilari=kategori_sayilari,
+        magazalar=magazalar
+    )
+
 
 @app.route("/clear_dashboard")
 def clear_dashboard():

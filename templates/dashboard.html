@@ -5,7 +5,7 @@
     <title>Akıllı Fiş Analiz</title>
 
     <link rel="stylesheet" href="/static/css/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
 </head>
 <body>
 
@@ -80,45 +80,7 @@
 
     </div>
 
-    <div class="dashboard-grid">
 
-        <div class="chart-box">
-
-            <h3>Kategori Dağılımı</h3>
-
-            <div class="chart-wrapper">
-                <canvas id="kategoriGrafik"></canvas>
-            </div>
-
-        </div>
-
-        <div class="summary-box">
-
-            <h3>📈 Hızlı Özet</h3>
-
-            <div class="summary-item">
-                <span>Toplam Fiş</span>
-                <strong>{{ toplam_fis }}</strong>
-            </div>
-
-            <div class="summary-item">
-                <span>Toplam Harcama</span>
-                <strong>{{ toplam_harcama }} TL</strong>
-            </div>
-
-            <div class="summary-item">
-                <span>En Çok Kullanılan</span>
-                <strong>Market</strong>
-            </div>
-
-            <div class="summary-item">
-                <span>Sistem Durumu</span>
-                <strong>Aktif ✅</strong>
-            </div>
-
-        </div>
-
-    </div>
 
     {% if analiz %}
 
@@ -170,6 +132,10 @@
 
     <div class="action-buttons">
 
+        <a href="/reports" class="btn">
+    📈 Harcama Raporları
+</a>
+
         <a href="/receipts" class="btn">
             📜 Fiş Geçmişi
         </a>
@@ -191,35 +157,6 @@
 
 </div>
 
-<script>
-
-const ctx = document.getElementById('kategoriGrafik');
-
-new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-        labels: {{ kategori_etiketleri | tojson }},
-        datasets: [{
-            data: {{ kategori_sayilari | tojson }},
-            backgroundColor: [
-                '#4f46e5',
-                '#22c55e',
-                '#f59e0b',
-                '#ef4444'
-            ]
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'bottom'
-            }
-        }
-    }
-});
-
-</script>
 
 </body>
-</html>
+</html>new Chart
