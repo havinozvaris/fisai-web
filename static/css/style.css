@@ -725,21 +725,44 @@ RESPONSIVE
 
 .result-box{
     margin-top:30px;
-    background:#fff;
+    background:#dfe9ff;
     padding:30px;
     border-radius:20px;
-    box-shadow:0 10px 25px rgba(0,0,0,.08);
+    border:1px solid #c7d8ff;
+    box-shadow:0 10px 25px rgba(79,70,229,.10);
 }
 
 .ocr-box{
     margin-top:15px;
-    background:#111827;
-    color:white;
+    background:white;
+    color:#1e293b;
     padding:20px;
     border-radius:12px;
+    border:1px solid #dbe4ff;
     white-space:pre-wrap;
     max-height:400px;
     overflow-y:auto;
+}
+
+.result-box h2,
+.result-box h3{
+    color:#304ffe;
+}
+
+.result-box .summary-item{
+    background:white;
+    padding:12px 15px;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+.result-box .summary-item span{
+    color:#64748b;
+}
+
+.result-box .summary-item strong{
+    color:#111827;
+    font-weight:700;
 }
 
 /* =========================
@@ -863,3 +886,4 @@ MOBILE MENU
         grid-template-columns:repeat(2,1fr);
     }
 }
+
