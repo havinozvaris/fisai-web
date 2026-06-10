@@ -887,3 +887,10 @@ MOBILE MENU
     }
 }
 
+.upload-buttons{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-bottom:15px;
+}

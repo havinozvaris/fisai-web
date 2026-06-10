@@ -27,27 +27,81 @@
         </p>
 
         <form
-            action="/upload"
-            method="POST"
-            enctype="multipart/form-data"
+    action="/upload"
+    method="POST"
+    enctype="multipart/form-data"
+>
+
+    <div class="upload-buttons">
+
+        <button
+            type="button"
+            class="btn"
+            onclick="document.getElementById('cameraInput').click()"
         >
+            📸 Kamera Aç
+        </button>
 
-            <input
-                type="file"
-                name="receipt"
-                accept="image/*"
-                capture="environment"
-                class="file-input"
-                required
-            >
+        <button
+            type="button"
+            class="btn"
+            onclick="document.getElementById('galleryInput').click()"
+        >
+            🖼️ Galeriden Seç
+        </button>
 
-            <br>
+    </div>
 
-            <button type="submit" class="btn">
-                🚀 Analizi Başlat
-            </button>
+    <input
+        type="file"
+        id="cameraInput"
+        name="receipt"
+        accept="image/*"
+        capture="environment"
+        style="display:none"
+    >
 
-        </form>
+    <input
+        type="file"
+        id="galleryInput"
+        name="receipt"
+        accept="image/*"
+        style="display:none"
+    >
+
+    <p id="selectedFile" style="margin-top:15px;color:#94a3b8;">
+        Henüz dosya seçilmedi
+    </p>
+
+    <br>
+
+    <button type="submit" class="btn">
+        🚀 Analizi Başlat
+    </button>
+
+</form>
+
+<script>
+
+document.getElementById("cameraInput").addEventListener("change", function() {
+
+    if(this.files.length > 0){
+        document.getElementById("selectedFile").innerText =
+            "📄 " + this.files[0].name;
+    }
+
+});
+
+document.getElementById("galleryInput").addEventListener("change", function() {
+
+    if(this.files.length > 0){
+        document.getElementById("selectedFile").innerText =
+            "📄 " + this.files[0].name;
+    }
+
+});
+
+</script>
 
     </div>
 
@@ -159,4 +213,4 @@
 
 
 </body>
-</html>new Chart
+</html>
