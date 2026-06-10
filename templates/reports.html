@@ -66,6 +66,16 @@
 
     </div>
 
+    <div class="chart-box monthly-chart-box">
+
+        <h3>📅 Aylık Harcama Grafiği</h3>
+
+        <div class="monthly-chart-wrapper">
+            <canvas id="aylikGrafik"></canvas>
+        </div>
+
+    </div>
+
     <div class="result-box">
 
         <h2>📋 Harcama Özeti</h2>
@@ -131,6 +141,55 @@ new Chart(ctx, {
         plugins: {
             legend: {
                 position: 'bottom'
+            }
+        }
+    }
+});
+
+const aylikCtx = document.getElementById('aylikGrafik');
+
+new Chart(aylikCtx, {
+    type: 'bar',
+    data: {
+        labels: {{ ay_etiketleri | tojson }},
+        datasets: [{
+            label: 'Aylık Harcama',
+            data: {{ ay_tutarlari | tojson }},
+            backgroundColor: '#4f46e5',
+
+            borderRadius: 12,
+            borderSkipped: false,
+
+            barPercentage: 0.6,
+            categoryPercentage: 0.7
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return context.parsed.y + " TL";
+                    }
+                }
+            }
+        },
+
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return value + " TL";
+                    }
+                }
             }
         }
     }

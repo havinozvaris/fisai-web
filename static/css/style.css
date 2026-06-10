@@ -894,3 +894,12 @@ MOBILE MENU
     flex-wrap:wrap;
     margin-bottom:15px;
 }
+
+.monthly-chart-box{
+    margin-top:30px;
+}
+
+.monthly-chart-wrapper{
+    height:280px;
+    margin-top:20px;
+}

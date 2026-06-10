@@ -7,7 +7,6 @@ import pytesseract
 import uuid
 from openai import OpenAI
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 
 from dotenv import load_dotenv
@@ -480,40 +479,72 @@ def reports():
     conn = sqlite3.connect("fisler.db")
     cursor = conn.cursor()
 
-    # Toplam fiş
     cursor.execute("SELECT COUNT(*) FROM fisler")
     toplam_fis = cursor.fetchone()[0]
 
-    # Toplam harcama
-    cursor.execute("SELECT toplam FROM fisler")
-    tutarlar = cursor.fetchall()
+    cursor.execute("SELECT tarih, toplam FROM fisler")
+    veriler = cursor.fetchall()
 
     toplam_harcama = 0
+    en_buyuk = 0
 
-    for t in tutarlar:
+    aylar = {
+        "01": 0,
+        "02": 0,
+        "03": 0,
+        "04": 0,
+        "05": 0,
+        "06": 0,
+        "07": 0,
+        "08": 0,
+        "09": 0,
+        "10": 0,
+        "11": 0,
+        "12": 0
+    }
+
+    ay_isimleri = {
+        "01": "Ocak",
+        "02": "Şubat",
+        "03": "Mart",
+        "04": "Nisan",
+        "05": "Mayıs",
+        "06": "Haziran",
+        "07": "Temmuz",
+        "08": "Ağustos",
+        "09": "Eylül",
+        "10": "Ekim",
+        "11": "Kasım",
+        "12": "Aralık"
+    }
+
+    for tarih, toplam in veriler:
+
         try:
-            toplam_harcama += float(str(t[0]).replace(",", "."))
+            tutar = float(str(toplam).replace(",", "."))
+
+            toplam_harcama += tutar
+
+            if tutar > en_buyuk:
+                en_buyuk = tutar
+
+            temiz_tarih = str(tarih).replace(".", "/")
+
+            if len(temiz_tarih) >= 10:
+
+                ay = temiz_tarih[3:5]
+
+                if ay in aylar:
+                    aylar[ay] += tutar
+
         except:
             pass
 
-    # Ortalama fiş
     ortalama = round(
         toplam_harcama / toplam_fis,
         2
     ) if toplam_fis > 0 else 0
 
-    # En büyük fiş
-    en_buyuk = 0
-
-    for t in tutarlar:
-        try:
-            deger = float(str(t[0]).replace(",", "."))
-            if deger > en_buyuk:
-                en_buyuk = deger
-        except:
-            pass
-
-    # Kategoriler
     cursor.execute("""
         SELECT kategori, COUNT(*)
         FROM fisler
@@ -529,7 +560,6 @@ def reports():
         kategori_etiketleri.append(kategori[0])
         kategori_sayilari.append(kategori[1])
 
-    # Mağaza sıralaması
     cursor.execute("""
         SELECT magaza, COUNT(*)
         FROM fisler
@@ -540,6 +570,15 @@ def reports():
 
     magazalar = cursor.fetchall()
 
+    ay_etiketleri = []
+    ay_tutarlari = []
+
+    for ay_no in aylar:
+
+        if aylar[ay_no] > 0:
+            ay_etiketleri.append(ay_isimleri[ay_no])
+            ay_tutarlari.append(round(aylar[ay_no], 2))
+
     conn.close()
 
     return render_template(
@@ -547,10 +586,12 @@ def reports():
         toplam_fis=toplam_fis,
         toplam_harcama=round(toplam_harcama, 2),
         ortalama=ortalama,
-        en_buyuk=en_buyuk,
+        en_buyuk=round(en_buyuk, 2),
         kategori_etiketleri=kategori_etiketleri,
         kategori_sayilari=kategori_sayilari,
-        magazalar=magazalar
+        magazalar=magazalar,
+        ay_etiketleri=ay_etiketleri,
+        ay_tutarlari=ay_tutarlari
     )
 
 
