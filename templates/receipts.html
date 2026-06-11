@@ -42,34 +42,36 @@
 
                 {% for fis in fisler %}
 
-                <div class="receipt-card">
+               <div class="receipt-card">
 
-                    <div class="receipt-header">
-                        <h3>{{ fis[4] }}</h3>
-                        <span>#{{ fis[0] }}</span>
-                    </div>
+    <div class="receipt-header">
+        <h3>{{ fis[5] }}</h3> <!-- Mağaza -->
+        <span>#{{ fis[0] }}</span>
+    </div>
 
-                    <p>📅 Tarih: {{ fis[1] }}</p>
+    <p>📅 Tarih: {{ fis[2] }}</p>
 
-                    <p>🛒 Kategori: {{ fis[3] }}</p>
+    <p>🛒 Kategori: {{ fis[4] }}</p>
 
-                    <p>💰 Toplam: {{ fis[2] }} TL</p>
+    <p>💰 Toplam: {{ fis[3] }} TL</p>
 
-                    <div style="margin-top:10px; display:flex; gap:10px;">
+    <p>🧾 KDV: {{ fis[6] }} TL ({{ fis[7] }})</p>
 
-                        <a href="/edit/{{ fis[0] }}" class="btn">
-                            ✏️ Düzenle
-                        </a>
+    <div style="margin-top:10px; display:flex; gap:10px;">
 
-                        <a href="/delete/{{ fis[0] }}"
-                           class="btn logout-btn"
-                           onclick="return confirm('Bu fişi silmek istediğine emin misin?')">
-                            🗑️ Sil
-                        </a>
+        <a href="/edit/{{ fis[0] }}" class="btn">
+            ✏️ Düzenle
+        </a>
 
-                    </div>
+        <a href="/delete/{{ fis[0] }}"
+           class="btn logout-btn"
+           onclick="return confirm('Bu fişi silmek istediğine emin misin?')">
+            🗑️ Sil
+        </a>
 
-                </div>
+    </div>
+
+</div>
 
                 {% endfor %}
 
