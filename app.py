@@ -176,27 +176,22 @@ def fis_bilgilerini_cek(ocr_text):
 
     tarih = "Bulunamadı"
     toplam = "Bulunamadı"
-
     kdv = 0.0
     kdv_orani = "Bulunamadı"
 
     # ---------------- Tarih ----------------
-
     tarih_match = re.search(
         r"\d{2}[./]\d{2}[./]\d{4}",
         ocr_text
     )
-
     if tarih_match:
         tarih = tarih_match.group()
 
     # ---------------- Toplam ----------------
-
     tutarlar = re.findall(
         r"\d+[.,]\d{2}",
         ocr_text
     )
-
     if tutarlar:
         try:
             toplam = max(
@@ -207,37 +202,28 @@ def fis_bilgilerini_cek(ocr_text):
             toplam = tutarlar[-1]
 
     # ---------------- KDV ----------------
-
     oranlar = []
-
     satirlar = ocr_text.splitlines()
 
     for satir in satirlar:
-
-        if "KDV" not in satir.upper():
+        if not re.search(r"kdv", satir, re.IGNORECASE):
             continue
 
-        # Oranı bul
-        oran = re.search(r"%\s*(\d+)", satir)
-
+        # Oran: %1, %8, %18, (%1), (% 1) gibi formatları yakala
+        oran = re.search(r"[(%]\s*(\d{1,2})\s*[):]?", satir)
         if oran:
             oranlar.append("%" + oran.group(1))
 
-        # Satırdaki bütün para değerlerini bul
+        # Satırdaki para değerlerini bul, son değeri KDV say
         sayilar = re.findall(r"\d+[.,]\d{2}", satir)
-
-        if len(sayilar) > 0:
-
+        if sayilar:
             try:
-                # Son sayı KDV tutarıdır
-                kdv += float(
-                    sayilar[-1].replace(",", ".")
-                )
+                kdv += float(sayilar[-1].replace(",", "."))
             except:
                 pass
 
     if oranlar:
-        kdv_orani = ", ".join(oranlar)
+        kdv_orani = ", ".join(set(oranlar))
 
     return {
         "tarih": tarih,
@@ -572,18 +558,6 @@ def upload():
 )
         
 
-
-            conn.commit()
-            cursor.execute("""
-          SELECT  kdv, kdv_orani
-          FROM fisler
-         ORDER BY id DESC
-           LIMIT 1
-            """)
-            print("SON KAYIT =", cursor.fetchone())
-            conn.close()
-
-            print("KAYDEDİLEN KDV:", cursor.fetchone())
 
         except Exception as e:
 
