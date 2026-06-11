@@ -9,9 +9,34 @@
 </head>
 <body>
 
-<div class="dashboard-container">
+<body>
+
+<div class="layout">
+
+    <div class="sidebar">
+
+        <div class="logo">
+            📊 FisAI
+        </div>
+
+        <div class="menu">
+            <a href="/dashboard">📊 Dashboard</a>
+            <a href="/receipts">📜 Fiş Geçmişi</a>
+            <a href="/reports">📈 Raporlar</a>
+            <a href="/profile">👤 Profil</a>
+            <a href="/logout">🚪 Çıkış</a>
+        </div>
+
+    </div>
+
+    <div class="main-content">
+
+        <div class="dashboard-container">
 
     <h1>📊 Akıllı Fiş Analiz</h1>
+    <h2>Merhaba {{ session.get("user_name") }} 👋</h2>
+    <p>Harcamalarını analiz etmeye devam et.</p>
+    
 
     <div class="upload-hero">
 
@@ -153,16 +178,6 @@ document.getElementById("receipt").addEventListener("change", function(){
 
     {% endif %}
 
-    <div class="action-buttons">
-
-        <a href="/reports" class="btn">
-    📈 Harcama Raporları
-</a>
-
-        <a href="/receipts" class="btn">
-            📜 Fiş Geçmişi
-        </a>
-
         <a
             href="/clear_dashboard"
             class="btn"
@@ -172,14 +187,12 @@ document.getElementById("receipt").addEventListener("change", function(){
             🧹 Son Analizi Temizle
         </a>
 
-        <a href="/" class="btn logout-btn">
-            🚪 Çıkış Yap
-        </a>
+        
+            </div>
 
     </div>
 
 </div>
-
 
 </body>
 </html>

@@ -43,16 +43,18 @@
                 Hesabına giriş yaparak analizlerine devam et.
             </p>
 
-            <form action="/dashboard" method="GET">
+            <form action="/login" method="POST">
 
                 <input
                     type="email"
+                    name="email"
                     placeholder="E-posta adresiniz"
                     required
                 >
 
                 <input
                     type="password"
+                    name="sifre"
                     placeholder="Şifreniz"
                     required
                 >

@@ -1,99 +1,100 @@
 <!DOCTYPE html>
-
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kayıt Ol - FisAI</title>
 
-<link rel="stylesheet" href="/static/css/style.css">
-
+    <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
 
 <div class="split-auth">
 
-<div class="auth-left">
+    <div class="auth-left">
 
-    <div class="brand-box">
+        <div class="brand-box">
 
-        <h1>📊 FisAI</h1>
+            <h1>📊 FisAI</h1>
 
-        <h2>
-            Harcamalarınızı
-            Yapay Zeka ile
-            Yönetin
-        </h2>
+            <h2>
+                Harcamalarınızı
+                Yapay Zeka ile
+                Yönetin
+            </h2>
 
-        <p>
-            Fişlerinizi yükleyin,
-            kategorileri otomatik çıkarın,
-            harcamalarınızı analiz edin.
-        </p>
-
-    </div>
-
-</div>
-
-<div class="auth-right">
-
-    <div class="login-card">
-
-        <h2>Aramıza Katıl 🎉</h2>
-
-        <p>
-            Yeni hesap oluşturarak analiz dünyasına giriş yap.
-        </p>
-
-        <form action="/dashboard" method="GET">
-
-            <input
-                type="text"
-                placeholder="Ad Soyad"
-                required
-            >
-
-            <input
-                type="email"
-                placeholder="E-posta adresiniz"
-                required
-            >
-
-            <input
-                type="password"
-                placeholder="Şifreniz"
-                required
-            >
-
-            <input
-                type="password"
-                placeholder="Şifre Tekrar"
-                required
-            >
-
-            <button
-                type="submit"
-                class="auth-btn"
-            >
-                Kayıt Ol
-            </button>
-
-        </form>
-
-        <div class="auth-footer">
-
-            Zaten hesabın var mı?
-
-            <a href="/login">
-                Giriş Yap
-            </a>
+            <p>
+                Fişlerinizi yükleyin,
+                kategorileri otomatik çıkarın,
+                harcamalarınızı analiz edin.
+            </p>
 
         </div>
 
     </div>
 
-</div>
+    <div class="auth-right">
 
+        <div class="login-card">
+
+            <h2>Aramıza Katıl 🎉</h2>
+
+            <p>
+                Yeni hesap oluşturarak analiz dünyasına giriş yap.
+            </p>
+
+            <form action="/register" method="POST">
+
+                <input
+                    type="text"
+                    name="ad"
+                    placeholder="Ad Soyad"
+                    required
+                >
+
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="E-posta adresiniz"
+                    required
+                >
+
+                <input
+                    type="password"
+                    name="sifre"
+                    placeholder="Şifreniz"
+                    required
+                >
+
+                <input
+                    type="password"
+                    name="sifre_tekrar"
+                    placeholder="Şifre Tekrar"
+                    required
+                >
+
+                <button
+                    type="submit"
+                    class="auth-btn"
+                >
+                    Kayıt Ol
+                </button>
+
+            </form>
+
+            <div class="auth-footer">
+
+                Zaten hesabın var mı?
+
+                <a href="/login">
+                    Giriş Yap
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 

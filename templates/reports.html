@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -9,108 +10,120 @@
 </head>
 <body>
 
-<div class="dashboard-container">
+<div class="layout">
 
-    <h1>📈 Harcama Raporları</h1>
+    <div class="sidebar">
 
-    <div class="stats-container">
-
-        <div class="stat-card">
-            <h3>💰 Toplam Harcama</h3>
-            <p>{{ toplam_harcama }} TL</p>
+        <div class="logo">
+            📊 FisAI
         </div>
 
-        <div class="stat-card">
-            <h3>📄 Toplam Fiş</h3>
-            <p>{{ toplam_fis }}</p>
-        </div>
-
-        <div class="stat-card">
-            <h3>📊 Ortalama Fiş</h3>
-            <p>{{ ortalama }} TL</p>
-        </div>
-
-        <div class="stat-card">
-            <h3>🏆 En Büyük Fiş</h3>
-            <p>{{ en_buyuk }} TL</p>
+        <div class="menu">
+            <a href="/dashboard">📊 Dashboard</a>
+            <a href="/receipts">📜 Fiş Geçmişi</a>
+            <a href="/reports" class="active-menu">📈 Raporlar</a>
+            <a href="/profile">👤 Profil</a>
+            <a href="/logout">🚪 Çıkış</a>
         </div>
 
     </div>
 
-    <div class="dashboard-grid">
+    <div class="main-content">
 
-        <div class="chart-box">
+        <div class="dashboard-container">
 
-            <h3>📊 Kategori Dağılımı</h3>
+            <h1>📈 Harcama Raporları</h1>
 
-            <div class="chart-wrapper">
-                <canvas id="kategoriGrafik"></canvas>
+            <div class="stats-container">
+
+                <div class="stat-card">
+                    <h3>💰 Toplam Harcama</h3>
+                    <p>{{ toplam_harcama }} TL</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>📄 Toplam Fiş</h3>
+                    <p>{{ toplam_fis }}</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>📊 Ortalama Fiş</h3>
+                    <p>{{ ortalama }} TL</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>🏆 En Büyük Fiş</h3>
+                    <p>{{ en_buyuk }} TL</p>
+                </div>
+
+            </div>
+
+            <div class="dashboard-grid">
+
+                <div class="chart-box">
+
+                    <h3>📊 Kategori Dağılımı</h3>
+
+                    <div class="chart-wrapper">
+                        <canvas id="kategoriGrafik"></canvas>
+                    </div>
+
+                </div>
+
+                <div class="summary-box">
+
+                    <h3>🏪 En Çok Gidilen Mağazalar</h3>
+
+                    {% for magaza in magazalar %}
+
+                    <div class="summary-item">
+                        <span>{{ magaza[0] }}</span>
+                        <strong>{{ magaza[1] }} fiş</strong>
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            <div class="chart-box monthly-chart-box">
+
+                <h3>📅 Aylık Harcama Grafiği</h3>
+
+                <div class="monthly-chart-wrapper">
+                    <canvas id="aylikGrafik"></canvas>
+                </div>
+
+            </div>
+
+            <div class="result-box">
+
+                <h2>📋 Harcama Özeti</h2>
+
+                <div class="summary-item">
+                    <span>Toplam Harcama</span>
+                    <strong>{{ toplam_harcama }} TL</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Toplam Fiş</span>
+                    <strong>{{ toplam_fis }}</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Ortalama Fiş</span>
+                    <strong>{{ ortalama }} TL</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>En Büyük Fiş</span>
+                    <strong>{{ en_buyuk }} TL</strong>
+                </div>
+
             </div>
 
         </div>
-
-        <div class="summary-box">
-
-            <h3>🏪 En Çok Gidilen Mağazalar</h3>
-
-            {% for magaza in magazalar %}
-
-            <div class="summary-item">
-                <span>{{ magaza[0] }}</span>
-                <strong>{{ magaza[1] }} fiş</strong>
-            </div>
-
-            {% endfor %}
-
-        </div>
-
-    </div>
-
-    <div class="chart-box monthly-chart-box">
-
-        <h3>📅 Aylık Harcama Grafiği</h3>
-
-        <div class="monthly-chart-wrapper">
-            <canvas id="aylikGrafik"></canvas>
-        </div>
-
-    </div>
-
-    <div class="result-box">
-
-        <h2>📋 Harcama Özeti</h2>
-
-        <div class="summary-item">
-            <span>Toplam Harcama</span>
-            <strong>{{ toplam_harcama }} TL</strong>
-        </div>
-
-        <div class="summary-item">
-            <span>Toplam Fiş</span>
-            <strong>{{ toplam_fis }}</strong>
-        </div>
-
-        <div class="summary-item">
-            <span>Ortalama Fiş</span>
-            <strong>{{ ortalama }} TL</strong>
-        </div>
-
-        <div class="summary-item">
-            <span>En Büyük Fiş</span>
-            <strong>{{ en_buyuk }} TL</strong>
-        </div>
-
-    </div>
-
-    <div class="action-buttons">
-
-        <a href="/dashboard" class="btn">
-            📊 Dashboard
-        </a>
-
-        <a href="/receipts" class="btn">
-            📋 Fiş Geçmişi
-        </a>
 
     </div>
 
@@ -156,10 +169,8 @@ new Chart(aylikCtx, {
             label: 'Aylık Harcama',
             data: {{ ay_tutarlari | tojson }},
             backgroundColor: '#4f46e5',
-
             borderRadius: 12,
             borderSkipped: false,
-
             barPercentage: 0.6,
             categoryPercentage: 0.7
         }]
@@ -199,3 +210,4 @@ new Chart(aylikCtx, {
 
 </body>
 </html>
+```

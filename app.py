@@ -7,7 +7,7 @@ import pytesseract
 import uuid
 from openai import OpenAI
 
-
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 from dotenv import load_dotenv
 import os
@@ -36,18 +36,36 @@ def init_db():
     cursor = conn.cursor()
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS fisler (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        tarih TEXT,
-        toplam REAL,
-        kategori TEXT,
-        magaza TEXT,
-        kdv REAL,
-        dosya_adi TEXT,
-        eklenme_tarihi TEXT,
-        duzeltilmis INTEGER DEFAULT 0
-    )
-    """)
+CREATE TABLE IF NOT EXISTS fisler (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    user_id INTEGER,
+
+    tarih TEXT,
+    toplam REAL,
+    kategori TEXT,
+    magaza TEXT,
+
+    kdv REAL,
+    dosya_adi TEXT,
+    eklenme_tarihi TEXT,
+
+    duzeltilmis INTEGER DEFAULT 0
+
+)
+""")
+
+    cursor.execute("""
+CREATE TABLE IF NOT EXISTS users (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ad TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    sifre TEXT NOT NULL
+
+)
+""")
 
     conn.commit()
     conn.close()
@@ -219,24 +237,131 @@ Fiş metni:
 def home():
     return render_template("index.html")
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
+
+    if request.method == "POST":
+
+        email = request.form["email"]
+        sifre = request.form["sifre"]
+
+        conn = sqlite3.connect("fisler.db")
+        cursor = conn.cursor()
+
+        cursor.execute("""
+        SELECT id, ad
+        FROM users
+        WHERE email=? AND sifre=?
+        """, (email, sifre))
+
+        user = cursor.fetchone()
+
+        conn.close()
+
+        if user:
+
+            session["user_id"] = user[0]
+            session["user_name"] = user[1]
+
+            return redirect("/dashboard")
+
+        return "Email veya şifre yanlış"
+
     return render_template("login.html")
 
-@app.route("/register")
+@app.route("/register", methods=["GET", "POST"])
 def register():
+
+    if request.method == "POST":
+
+        ad = request.form["ad"]
+        email = request.form["email"]
+        sifre = request.form["sifre"]
+        sifre_tekrar = request.form["sifre_tekrar"]
+
+        if sifre != sifre_tekrar:
+            return "Şifreler eşleşmiyor"
+        
+        if len(ad.strip()) < 3:
+         return "Ad Soyad en az 3 karakter olmalıdır"
+ 
+        if len(sifre) < 6:
+         return "Şifre en az 6 karakter olmalıdır"
+ 
+        if not any(char.isdigit() for char in sifre):
+         return "Şifre en az 1 rakam içermelidir"
+
+        if not any(char.isalpha() for char in sifre):
+         return "Şifre en az 1 harf içermelidir"
+        
+
+        conn = sqlite3.connect("fisler.db")
+        cursor = conn.cursor()
+
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ad TEXT,
+            email TEXT UNIQUE,
+            sifre TEXT
+        )
+        """)
+
+        try:
+
+            cursor.execute("""
+            INSERT INTO users(ad,email,sifre)
+            VALUES(?,?,?)
+            """, (ad, email, sifre))
+
+            conn.commit()
+
+        except:
+            conn.close()
+            return "Bu e-posta zaten kayıtlı"
+
+        conn.close()
+
+        return redirect("/login")
+
     return render_template("register.html")
+
+@app.route("/logout")
+def logout():
+
+    session.clear()
+
+    return redirect("/login")
 
 @app.route("/dashboard")
 def dashboard():
 
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return redirect("/login")
+
     conn = sqlite3.connect("fisler.db")
     cursor = conn.cursor()
 
-    cursor.execute("SELECT COUNT(*) FROM fisler")
+    cursor.execute(
+        """
+        SELECT COUNT(*)
+        FROM fisler
+        WHERE user_id=?
+        """,
+        (user_id,)
+    )
     toplam_fis = cursor.fetchone()[0]
 
-    cursor.execute("SELECT toplam FROM fisler")
+    cursor.execute(
+        """
+        SELECT toplam
+        FROM fisler
+        WHERE user_id=?
+        """,
+        (user_id,)
+    )
     tutarlar = cursor.fetchall()
 
     toplam_harcama = 0
@@ -248,17 +373,35 @@ def dashboard():
             pass
 
     cursor.execute(
-        "SELECT COUNT(*) FROM fisler WHERE kategori='Market'"
+        """
+        SELECT COUNT(*)
+        FROM fisler
+        WHERE kategori='Market'
+        AND user_id=?
+        """,
+        (user_id,)
     )
     market = cursor.fetchone()[0]
 
     cursor.execute(
-        "SELECT COUNT(*) FROM fisler WHERE kategori='Yeme İçme'"
+        """
+        SELECT COUNT(*)
+        FROM fisler
+        WHERE kategori='Yeme İçme'
+        AND user_id=?
+        """,
+        (user_id,)
     )
     yeme_icme = cursor.fetchone()[0]
 
     cursor.execute(
-        "SELECT COUNT(*) FROM fisler WHERE kategori='Teknoloji'"
+        """
+        SELECT COUNT(*)
+        FROM fisler
+        WHERE kategori='Teknoloji'
+        AND user_id=?
+        """,
+        (user_id,)
     )
     teknoloji = cursor.fetchone()[0]
 
@@ -277,19 +420,18 @@ def dashboard():
     ]
 
     return render_template(
-    "dashboard.html",
-    toplam_fis=toplam_fis,
-    toplam_harcama=round(toplam_harcama, 2),
-    market=market,
-    yeme_icme=yeme_icme,
-    teknoloji=teknoloji,
-    kategori_etiketleri=kategori_etiketleri,
-    kategori_sayilari=kategori_sayilari,
-
-    ocr_text=session.get("ocr_text"),
-    analiz=session.get("analiz"),
-    ai_yorum=session.get("ai_yorum")
-)
+        "dashboard.html",
+        toplam_fis=toplam_fis,
+        toplam_harcama=round(toplam_harcama, 2),
+        market=market,
+        yeme_icme=yeme_icme,
+        teknoloji=teknoloji,
+        kategori_etiketleri=kategori_etiketleri,
+        kategori_sayilari=kategori_sayilari,
+        ocr_text=session.get("ocr_text"),
+        analiz=session.get("analiz"),
+        ai_yorum=session.get("ai_yorum")
+    )
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
@@ -360,21 +502,30 @@ def upload():
             conn = sqlite3.connect("fisler.db")
             cursor = conn.cursor()
 
+            print("SESSION USER =", session.get("user_id"))
             cursor.execute(
-                """
-                INSERT INTO fisler
-                (tarih, toplam, kategori, magaza)
-                VALUES (?, ?, ?, ?)
-                """,
-                (
-                    analiz["tarih"],
-                    analiz["toplam"],
-                    analiz["kategori"],
-                    analiz["magaza"]
-                )
-            )
+    """
+    INSERT INTO fisler
+    (user_id, tarih, toplam, kategori, magaza)
+    VALUES (?, ?, ?, ?, ?)
+    """,
+    (
+        session["user_id"],
+        analiz["tarih"],
+        analiz["toplam"],
+        analiz["kategori"],
+        analiz["magaza"]
+    )
+)
 
             conn.commit()
+            cursor.execute("""
+SELECT *
+FROM fisler
+ORDER BY id DESC
+LIMIT 1
+""")
+            print("SON KAYIT =", cursor.fetchone())
             conn.close()
 
             print("VERITABANINA KAYDEDILDI")
@@ -395,11 +546,22 @@ def upload():
 @app.route("/receipts")
 def receipts():
 
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return redirect("/login")
+
     conn = sqlite3.connect("fisler.db")
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT * FROM fisler ORDER BY id DESC"
+        """
+        SELECT *
+        FROM fisler
+        WHERE user_id=?
+        ORDER BY id DESC
+        """,
+        (user_id,)
     )
 
     fisler = cursor.fetchall()

@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -7,68 +8,93 @@
 </head>
 <body>
 
-<div class="container">
+<div class="layout">
 
-    <h2>📋 Fiş Geçmişi</h2>
+    <div class="sidebar">
 
-    {% if session.get("mesaj") %}
-    <div class="success-box">
-        {{ session.get("mesaj") }}
-    </div>
-    {% endif %}
+        <div class="logo">
+            📊 FisAI
+        </div>
 
-    <div class="receipt-list">
-
-        {% for fis in fisler %}
-
-        <div class="receipt-card">
-
-            <div class="receipt-header">
-                <h3>{{ fis[4] }}</h3>
-                <span>#{{ fis[0] }}</span>
-            </div>
-
-            <p>📅 Tarih: {{ fis[1] }}</p>
-
-            <p>🛒 Kategori: {{ fis[3] }}</p>
-
-            <p>💰 Toplam: {{ fis[2] }} TL</p>
-             <div style="margin-top:10px; display:flex; gap:10px;">
-
-        <a href="/edit/{{ fis[0] }}" class="btn">
-            ✏️ Düzenle
-        </a>
-
-        <a href="/delete/{{ fis[0] }}" class="btn logout-btn"
-           onclick="return confirm('Bu fişi silmek istediğine emin misin?')">
-            🗑️ Sil
-        </a>
-            </div>
-        </div>  
-
-        {% endfor %}
+        <div class="menu">
+            <a href="/dashboard">📊 Dashboard</a>
+            <a href="/receipts" class="active-menu">📜 Fiş Geçmişi</a>
+            <a href="/reports">📈 Raporlar</a>
+            <a href="/profile">👤 Profil</a>
+            <a href="/logout">🚪 Çıkış</a>
+        </div>
 
     </div>
 
-    <br>
+    <div class="main-content">
 
-    <div style="display:flex; gap:15px; justify-content:center;">
+        <div class="container">
 
-        <a href="/dashboard" class="btn">
-            📊 Panele Dön
-        </a>
+            <h2>📋 Fiş Geçmişi</h2>
 
-        <a
-    href="/delete_all"
-    class="btn logout-btn"
-    onclick="return confirm('Tüm fiş geçmişini silmek istediğinize emin misiniz?')"
->
-    🗑️ Tüm Geçmişi Temizle
-</a>
-        
+            {% if session.get("mesaj") %}
+            <div class="success-box">
+                {{ session.get("mesaj") }}
+            </div>
+            {% endif %}
+
+            <div class="receipt-list">
+
+                {% for fis in fisler %}
+
+                <div class="receipt-card">
+
+                    <div class="receipt-header">
+                        <h3>{{ fis[4] }}</h3>
+                        <span>#{{ fis[0] }}</span>
+                    </div>
+
+                    <p>📅 Tarih: {{ fis[1] }}</p>
+
+                    <p>🛒 Kategori: {{ fis[3] }}</p>
+
+                    <p>💰 Toplam: {{ fis[2] }} TL</p>
+
+                    <div style="margin-top:10px; display:flex; gap:10px;">
+
+                        <a href="/edit/{{ fis[0] }}" class="btn">
+                            ✏️ Düzenle
+                        </a>
+
+                        <a href="/delete/{{ fis[0] }}"
+                           class="btn logout-btn"
+                           onclick="return confirm('Bu fişi silmek istediğine emin misin?')">
+                            🗑️ Sil
+                        </a>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <br>
+
+            <div style="display:flex; justify-content:center;">
+
+                <a
+                    href="/delete_all"
+                    class="btn logout-btn"
+                    onclick="return confirm('Tüm fiş geçmişini silmek istediğinize emin misiniz?')"
+                >
+                    🗑️ Tüm Geçmişi Temizle
+                </a>
+
+            </div>
+
+        </div>
+
     </div>
 
 </div>
 
 </body>
 </html>
+```
