@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS fisler (
     magaza TEXT,
 
     kdv REAL,
+    kdv_orani TEXT,
     dosya_adi TEXT,
     eklenme_tarihi TEXT,
 
@@ -171,11 +172,15 @@ def resmi_iyilestir(dosya_yolu):
 # -------------------------
 # OCR ANALİZ
 # -------------------------
-
 def fis_bilgilerini_cek(ocr_text):
 
     tarih = "Bulunamadı"
     toplam = "Bulunamadı"
+
+    kdv = 0.0
+    kdv_orani = "Bulunamadı"
+
+    # ---------------- Tarih ----------------
 
     tarih_match = re.search(
         r"\d{2}[./]\d{2}[./]\d{4}",
@@ -184,6 +189,8 @@ def fis_bilgilerini_cek(ocr_text):
 
     if tarih_match:
         tarih = tarih_match.group()
+
+    # ---------------- Toplam ----------------
 
     tutarlar = re.findall(
         r"\d+[.,]\d{2}",
@@ -194,17 +201,52 @@ def fis_bilgilerini_cek(ocr_text):
         try:
             toplam = max(
                 tutarlar,
-                key=lambda x: float(
-                    x.replace(",", ".")
-                )
+                key=lambda x: float(x.replace(",", "."))
             )
         except:
             toplam = tutarlar[-1]
 
+    # ---------------- KDV ----------------
+
+    oranlar = []
+
+    satirlar = ocr_text.splitlines()
+
+    for satir in satirlar:
+
+        if "KDV" not in satir.upper():
+            continue
+
+        # Oranı bul
+        oran = re.search(r"%\s*(\d+)", satir)
+
+        if oran:
+            oranlar.append("%" + oran.group(1))
+
+        # Satırdaki bütün para değerlerini bul
+        sayilar = re.findall(r"\d+[.,]\d{2}", satir)
+
+        if len(sayilar) > 0:
+
+            try:
+                # Son sayı KDV tutarıdır
+                kdv += float(
+                    sayilar[-1].replace(",", ".")
+                )
+            except:
+                pass
+
+    if oranlar:
+        kdv_orani = ", ".join(oranlar)
+
     return {
         "tarih": tarih,
-        "toplam": toplam
+        "toplam": toplam,
+        "kdv": round(kdv, 2),
+        "kdv_orani": kdv_orani
     }
+
+   
 
 def ai_fis_analizi(ocr_text):
 
@@ -333,6 +375,7 @@ def logout():
 
     return redirect("/login")
 
+
 @app.route("/dashboard")
 def dashboard():
 
@@ -344,24 +387,20 @@ def dashboard():
     conn = sqlite3.connect("fisler.db")
     cursor = conn.cursor()
 
-    cursor.execute(
-        """
+    # Toplam fiş sayısı
+    cursor.execute("""
         SELECT COUNT(*)
         FROM fisler
         WHERE user_id=?
-        """,
-        (user_id,)
-    )
+    """, (user_id,))
     toplam_fis = cursor.fetchone()[0]
 
-    cursor.execute(
-        """
+    # Toplam harcama
+    cursor.execute("""
         SELECT toplam
         FROM fisler
         WHERE user_id=?
-        """,
-        (user_id,)
-    )
+    """, (user_id,))
     tutarlar = cursor.fetchall()
 
     toplam_harcama = 0
@@ -372,37 +411,43 @@ def dashboard():
         except:
             pass
 
-    cursor.execute(
-        """
+    # Toplam KDV
+    cursor.execute("""
+        SELECT SUM(kdv)
+        FROM fisler
+        WHERE user_id=?
+    """, (user_id,))
+
+    toplam_kdv = cursor.fetchone()[0]
+
+    if toplam_kdv is None:
+        toplam_kdv = 0
+
+    # Market sayısı
+    cursor.execute("""
         SELECT COUNT(*)
         FROM fisler
         WHERE kategori='Market'
         AND user_id=?
-        """,
-        (user_id,)
-    )
+    """, (user_id,))
     market = cursor.fetchone()[0]
 
-    cursor.execute(
-        """
+    # Yeme İçme sayısı
+    cursor.execute("""
         SELECT COUNT(*)
         FROM fisler
         WHERE kategori='Yeme İçme'
         AND user_id=?
-        """,
-        (user_id,)
-    )
+    """, (user_id,))
     yeme_icme = cursor.fetchone()[0]
 
-    cursor.execute(
-        """
+    # Teknoloji sayısı
+    cursor.execute("""
         SELECT COUNT(*)
         FROM fisler
         WHERE kategori='Teknoloji'
         AND user_id=?
-        """,
-        (user_id,)
-    )
+    """, (user_id,))
     teknoloji = cursor.fetchone()[0]
 
     conn.close()
@@ -423,6 +468,7 @@ def dashboard():
         "dashboard.html",
         toplam_fis=toplam_fis,
         toplam_harcama=round(toplam_harcama, 2),
+        toplam_kdv=round(toplam_kdv, 2),
         market=market,
         yeme_icme=yeme_icme,
         teknoloji=teknoloji,
@@ -432,6 +478,7 @@ def dashboard():
         analiz=session.get("analiz"),
         ai_yorum=session.get("ai_yorum")
     )
+
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
@@ -474,7 +521,7 @@ def upload():
 
             ocr_text = pytesseract.image_to_string(
                 temiz_resim,
-                lang="eng",
+                lang="tur+eng",
                 config="--oem 3 --psm 6"
             )
 
@@ -489,6 +536,10 @@ def upload():
             print(ai_yorum)
 
             analiz = fis_bilgilerini_cek(ocr_text)
+            
+            print("ANALİZ KDV:", analiz["kdv"])
+            print("ANALİZ KDV ORANI:", analiz["kdv_orani"])
+
 
             kategori = kategori_bul(ocr_text)
 
@@ -506,29 +557,33 @@ def upload():
             cursor.execute(
     """
     INSERT INTO fisler
-    (user_id, tarih, toplam, kategori, magaza)
-    VALUES (?, ?, ?, ?, ?)
+    (user_id, tarih, toplam, kategori, magaza, kdv, kdv_orani)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
     """,
     (
         session["user_id"],
         analiz["tarih"],
         analiz["toplam"],
         analiz["kategori"],
-        analiz["magaza"]
+        analiz["magaza"],
+        analiz["kdv"],
+        analiz["kdv_orani"]
     )
 )
+        
+
 
             conn.commit()
             cursor.execute("""
-SELECT *
-FROM fisler
-ORDER BY id DESC
-LIMIT 1
-""")
+          SELECT  kdv, kdv_orani
+          FROM fisler
+         ORDER BY id DESC
+           LIMIT 1
+            """)
             print("SON KAYIT =", cursor.fetchone())
             conn.close()
 
-            print("VERITABANINA KAYDEDILDI")
+            print("KAYDEDİLEN KDV:", cursor.fetchone())
 
         except Exception as e:
 
@@ -755,6 +810,107 @@ def reports():
         ay_etiketleri=ay_etiketleri,
         ay_tutarlari=ay_tutarlari
     )
+
+@app.route("/uye_profil")
+def uye_profil():
+
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return redirect("/login")
+
+    conn = sqlite3.connect("fisler.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT ad, email
+        FROM users
+        WHERE id=?
+    """, (user_id,))
+
+    user = cursor.fetchone()
+
+    conn.close()
+
+    if user is None:
+        return redirect("/dashboard")
+
+    return render_template(
+        "uye_profil.html",
+        user={
+            "name": user[0],
+            "email": user[1]
+        }
+    )
+
+    
+@app.route("/profil_guncelle", methods=["POST"])
+def profil_guncelle():
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    email = request.form["email"]
+
+    conn = sqlite3.connect("fisler.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    UPDATE users
+    SET email=?
+    WHERE id=?
+    """, (
+        email,
+        session["user_id"]
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/uye_profil")
+
+@app.route("/sifre_degistir", methods=["POST"])
+def sifre_degistir():
+
+    if "user_id" not in session:
+        return redirect("/login")
+
+    eski = request.form["old_password"]
+    yeni = request.form["new_password"]
+
+    conn = sqlite3.connect("fisler.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT sifre
+    FROM users
+    WHERE id=?
+    """, (session["user_id"],))
+
+    mevcut_sifre = cursor.fetchone()[0]
+
+    if mevcut_sifre != eski:
+        conn.close()
+        return "Eski şifre yanlış"
+
+    cursor.execute("""
+    UPDATE users
+    SET sifre=?
+    WHERE id=?
+    """, (
+        yeni,
+        session["user_id"]
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/uye_profil")
+
+
+
+
+
 
 
 @app.route("/clear_dashboard")
