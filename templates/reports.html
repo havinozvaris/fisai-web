@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -22,7 +21,7 @@
             <a href="/dashboard">📊 Anasayfa</a>
             <a href="/receipts">📜 Fiş Geçmişi</a>
             <a href="/reports" class="active-menu">📈 Raporlar</a>
-              <a href="/uye_profil" class="active">👤 Profil</a>
+            <a href="/uye_profil">👤 Profil</a>
             <a href="/logout">🚪 Çıkış</a>
         </div>
 
@@ -54,6 +53,11 @@
                 <div class="stat-card">
                     <h3>🏆 En Büyük Fiş</h3>
                     <p>{{ en_buyuk }} TL</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>💸 Toplam KDV</h3>
+                    <p>{{ toplam_kdv }} TL</p>
                 </div>
 
             </div>
@@ -119,6 +123,11 @@
                 <div class="summary-item">
                     <span>En Büyük Fiş</span>
                     <strong>{{ en_buyuk }} TL</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Toplam KDV</span>
+                    <strong>{{ toplam_kdv }} TL</strong>
                 </div>
 
             </div>
@@ -210,4 +219,3 @@ new Chart(aylikCtx, {
 
 </body>
 </html>
-```

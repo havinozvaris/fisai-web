@@ -635,6 +635,18 @@ def reports():
     toplam_harcama = 0
     en_buyuk = 0
 
+    # TOPLAM KDV
+    cursor.execute("SELECT kdv FROM fisler")
+    kdvler = cursor.fetchall()
+
+    toplam_kdv = 0
+
+    for k in kdvler:
+        try:
+            toplam_kdv += float(str(k[0]).replace(",", "."))
+        except:
+            pass
+
     aylar = {
         "01": 0,
         "02": 0,
@@ -678,7 +690,6 @@ def reports():
             temiz_tarih = str(tarih).replace(".", "/")
 
             if len(temiz_tarih) >= 10:
-
                 ay = temiz_tarih[3:5]
 
                 if ay in aylar:
@@ -721,7 +732,6 @@ def reports():
     ay_tutarlari = []
 
     for ay_no in aylar:
-
         if aylar[ay_no] > 0:
             ay_etiketleri.append(ay_isimleri[ay_no])
             ay_tutarlari.append(round(aylar[ay_no], 2))
@@ -734,6 +744,7 @@ def reports():
         toplam_harcama=round(toplam_harcama, 2),
         ortalama=ortalama,
         en_buyuk=round(en_buyuk, 2),
+        toplam_kdv=round(toplam_kdv, 2),
         kategori_etiketleri=kategori_etiketleri,
         kategori_sayilari=kategori_sayilari,
         magazalar=magazalar,

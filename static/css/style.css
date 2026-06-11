@@ -980,3 +980,9 @@ MOBILE MENU
     text-align:center;
     font-weight:500;
 }
+
+.stats-grid{
+    display:grid;
+    grid-template-columns: repeat(5,1fr);
+    gap:20px;
+}
