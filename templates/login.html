@@ -12,9 +12,7 @@
 <div class="split-auth">
 
     <div class="auth-left">
-
         <div class="brand-box">
-
             <h1>📊 FisAI</h1>
 
             <h2>
@@ -28,13 +26,10 @@
                 kategorileri otomatik çıkarın,
                 harcamalarınızı analiz edin.
             </p>
-
         </div>
-
     </div>
 
     <div class="auth-right">
-
         <div class="login-card">
 
             <h2>Tekrar Hoş Geldin 👋</h2>
@@ -42,6 +37,12 @@
             <p>
                 Hesabına giriş yaparak analizlerine devam et.
             </p>
+
+            {% if hata %}
+                <div class="error-message">
+                    {{ hata }}
+                </div>
+            {% endif %}
 
             <form action="/login" method="POST">
 
@@ -69,17 +70,14 @@
             </form>
 
             <div class="auth-footer">
-
                 Hesabın yok mu?
 
                 <a href="/register">
                     Kayıt Ol
                 </a>
-
             </div>
 
         </div>
-
     </div>
 
 </div>

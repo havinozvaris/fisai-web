@@ -960,3 +960,23 @@ MOBILE MENU
     margin-left:250px;
     width:100%;
 }
+
+.error-message {
+    background: #ffe6e6;
+    color: #c0392b;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.error-message{
+    background:#ffe5e5;
+    color:#d60000;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:15px;
+    text-align:center;
+    font-weight:500;
+}

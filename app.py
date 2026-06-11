@@ -7,7 +7,7 @@ import pytesseract
 import uuid
 from openai import OpenAI
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+#pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 from dotenv import load_dotenv
 import os
@@ -36,37 +36,45 @@ def init_db():
     cursor = conn.cursor()
 
     cursor.execute("""
-CREATE TABLE IF NOT EXISTS fisler (
-
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-    user_id INTEGER,
-
-    tarih TEXT,
-    toplam REAL,
-    kategori TEXT,
-    magaza TEXT,
-
-    kdv REAL,
-    kdv_orani TEXT,
-    dosya_adi TEXT,
-    eklenme_tarihi TEXT,
-
-    duzeltilmis INTEGER DEFAULT 0
-
-)
-""")
+    CREATE TABLE IF NOT EXISTS fisler (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        tarih TEXT,
+        toplam REAL,
+        kategori TEXT,
+        magaza TEXT,
+        kdv REAL DEFAULT 0,
+        kdv_orani TEXT,
+        dosya_adi TEXT,
+        eklenme_tarihi TEXT,
+        ai_yorum TEXT,
+        ocr_text TEXT,
+        duzeltilmis INTEGER DEFAULT 0
+    )
+    """)
 
     cursor.execute("""
-CREATE TABLE IF NOT EXISTS users (
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ad TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        sifre TEXT NOT NULL
+    )
+    """)
 
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ad TEXT NOT NULL,
-    email TEXT UNIQUE NOT NULL,
-    sifre TEXT NOT NULL
-
-)
-""")
+    # Eski veritabanında kolonlar yoksa ekler
+    for kolon in [
+        "ai_yorum TEXT",
+        "ocr_text TEXT",
+        "kdv REAL DEFAULT 0",
+        "kdv_orani TEXT",
+        "dosya_adi TEXT",
+        "eklenme_tarihi TEXT"
+    ]:
+        try:
+            cursor.execute(f"ALTER TABLE fisler ADD COLUMN {kolon}")
+        except:
+            pass
 
     conn.commit()
     conn.close()
@@ -74,45 +82,35 @@ CREATE TABLE IF NOT EXISTS users (
 init_db()
 
 
-def kategori_bul(ocr_text):
-
+def temizle_text(ocr_text):
     text = ocr_text.lower()
+    text = text.replace("i̇", "i")
+    text = text.replace("ı", "i")
+    text = text.replace("ş", "s")
+    text = text.replace("ğ", "g")
+    text = text.replace("ü", "u")
+    text = text.replace("ö", "o")
+    text = text.replace("ç", "c")
+    return text
 
-    if "a101" in text:
+
+def kategori_bul(ocr_text):
+    text = temizle_text(ocr_text)
+
+    if "a101" in text or "migros" in text or "bim" in text or "sok" in text:
         return "Market"
 
-    elif "migros" in text:
-        return "Market"
-
-    elif "bim" in text:
-        return "Market"
-
-    elif "şok" in text:
-        return "Market"
-
-    elif "starbucks" in text:
+    elif "starbucks" in text or "burger" in text or "mcdonald" in text:
         return "Yeme İçme"
 
-    elif "burger king" in text:
-        return "Yeme İçme"
-
-    elif "mcdonald" in text:
-        return "Yeme İçme"
-
-    elif "teknosa" in text:
-        return "Teknoloji"
-
-    elif "vatan" in text:
-        return "Teknoloji"
-
-    elif "media markt" in text:
+    elif "teknosa" in text or "vatan" in text or "media markt" in text:
         return "Teknoloji"
 
     return "Diğer"
 
-def magaza_bul(ocr_text):
 
-    text = ocr_text.lower()
+def magaza_bul(ocr_text):
+    text = temizle_text(ocr_text)
 
     if "a101" in text:
         return "A101"
@@ -123,7 +121,7 @@ def magaza_bul(ocr_text):
     elif "bim" in text:
         return "BİM"
 
-    elif "şok" in text:
+    elif "sok" in text:
         return "ŞOK"
 
     elif "starbucks" in text:
@@ -133,7 +131,6 @@ def magaza_bul(ocr_text):
         return "Teknosa"
 
     return "Bilinmiyor"
-
 
 
 def resmi_iyilestir(dosya_yolu):
@@ -179,51 +176,47 @@ def fis_bilgilerini_cek(ocr_text):
     kdv = 0.0
     kdv_orani = "Bulunamadı"
 
-    # ---------------- Tarih ----------------
-    tarih_match = re.search(
-        r"\d{2}[./]\d{2}[./]\d{4}",
-        ocr_text
-    )
+    tarih_match = re.search(r"\d{2}[./]\d{2}[./]\d{4}", ocr_text)
     if tarih_match:
         tarih = tarih_match.group()
 
-    # ---------------- Toplam ----------------
-    tutarlar = re.findall(
-        r"\d+[.,]\d{2}",
-        ocr_text
-    )
-    if tutarlar:
-        try:
-            toplam = max(
-                tutarlar,
-                key=lambda x: float(x.replace(",", "."))
-            )
-        except:
-            toplam = tutarlar[-1]
-
-    # ---------------- KDV ----------------
-    oranlar = []
     satirlar = ocr_text.splitlines()
+    oranlar = []
 
     for satir in satirlar:
-        if not re.search(r"kdv", satir, re.IGNORECASE):
-            continue
+        temiz_satir = satir.strip()
+        kucuk = temiz_satir.lower()
 
-        # Oran: %1, %8, %18, (%1), (% 1) gibi formatları yakala
-        oran = re.search(r"[(%]\s*(\d{1,2})\s*[):]?", satir)
-        if oran:
-            oranlar.append("%" + oran.group(1))
+        # SADECE gerçek TOPLAM satırı
+        if re.match(r"^toplam", kucuk):
+            toplam_match = re.search(r"\d+[.,]\d{2}", temiz_satir)
+            if toplam_match:
+                toplam = toplam_match.group()
 
-        # Satırdaki para değerlerini bul, son değeri KDV say
-        sayilar = re.findall(r"\d+[.,]\d{2}", satir)
-        if sayilar:
-            try:
-                kdv += float(sayilar[-1].replace(",", "."))
-            except:
-                pass
+        # KDV satırları
+        if "kdv" in kucuk:
+            sayilar = re.findall(r"\d+[.,]\d{2}", temiz_satir)
 
-    if oranlar:
-        kdv_orani = ", ".join(set(oranlar))
+            if sayilar:
+                try:
+                    kdv += float(sayilar[-1].replace(",", "."))
+                except:
+                    pass
+
+            # OCR hatalarını da yakala
+            if any(x in temiz_satir for x in ["241","941","%1"]):
+                oranlar.append("%1")
+
+            if any(x in temiz_satir for x in ["9010","910","%10"]):
+                 oranlar.append("%10")
+
+            if any(x in temiz_satir for x in ["918","%18"]):
+                oranlar.append("%18")
+
+            if any(x in temiz_satir for x in ["908","%8"]):
+                oranlar.append("%8")
+            if oranlar:
+                kdv_orani = ", ".join(sorted(set(oranlar)))
 
     return {
         "tarih": tarih,
@@ -231,7 +224,6 @@ def fis_bilgilerini_cek(ocr_text):
         "kdv": round(kdv, 2),
         "kdv_orani": kdv_orani
     }
-
    
 
 def ai_fis_analizi(ocr_text):
@@ -268,91 +260,102 @@ def home():
 @app.route("/login", methods=["GET", "POST"])
 def login():
 
+    hata = None
+
     if request.method == "POST":
 
         email = request.form["email"]
         sifre = request.form["sifre"]
 
-        conn = sqlite3.connect("fisler.db")
-        cursor = conn.cursor()
+        try:
+            conn = sqlite3.connect("fisler.db")
+            cursor = conn.cursor()
 
-        cursor.execute("""
-        SELECT id, ad
-        FROM users
-        WHERE email=? AND sifre=?
-        """, (email, sifre))
+            cursor.execute("""
+                SELECT id, ad, sifre
+                FROM users
+                WHERE email=?
+            """, (email,))
 
-        user = cursor.fetchone()
+            user = cursor.fetchone()
 
-        conn.close()
+            conn.close()
 
-        if user:
+            if user is None:
+                hata = "Bu e-posta ile kayıtlı hesap bulunamadı."
 
-            session["user_id"] = user[0]
-            session["user_name"] = user[1]
+            elif user[2] != sifre:
+                hata = "Şifre yanlış."
 
-            return redirect("/dashboard")
+            else:
+                session["user_id"] = user[0]
+                session["user_name"] = user[1]
 
-        return "Email veya şifre yanlış"
+                return redirect("/dashboard")
 
-    return render_template("login.html")
+        except:
+            hata = "Giriş yapılırken bir hata oluştu."
+
+    return render_template("login.html", hata=hata)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
 
+    hata = None
+
     if request.method == "POST":
 
-        ad = request.form["ad"]
-        email = request.form["email"]
-        sifre = request.form["sifre"]
-        sifre_tekrar = request.form["sifre_tekrar"]
-
-        if sifre != sifre_tekrar:
-            return "Şifreler eşleşmiyor"
-        
-        if len(ad.strip()) < 3:
-         return "Ad Soyad en az 3 karakter olmalıdır"
- 
-        if len(sifre) < 6:
-         return "Şifre en az 6 karakter olmalıdır"
- 
-        if not any(char.isdigit() for char in sifre):
-         return "Şifre en az 1 rakam içermelidir"
-
-        if not any(char.isalpha() for char in sifre):
-         return "Şifre en az 1 harf içermelidir"
-        
-
-        conn = sqlite3.connect("fisler.db")
-        cursor = conn.cursor()
-
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ad TEXT,
-            email TEXT UNIQUE,
-            sifre TEXT
-        )
-        """)
-
         try:
+            ad = request.form["ad"]
+            email = request.form["email"]
+            sifre = request.form["sifre"]
+            sifre_tekrar = request.form["sifre_tekrar"]
 
-            cursor.execute("""
-            INSERT INTO users(ad,email,sifre)
-            VALUES(?,?,?)
-            """, (ad, email, sifre))
+            if sifre != sifre_tekrar:
+                hata = "Şifreler eşleşmiyor."
 
-            conn.commit()
+            elif len(ad.strip()) < 3:
+                hata = "Ad Soyad en az 3 karakter olmalıdır."
 
-        except:
-            conn.close()
-            return "Bu e-posta zaten kayıtlı"
+            elif len(sifre) < 6:
+                hata = "Şifre en az 6 karakter olmalıdır."
 
-        conn.close()
+            elif not any(char.isdigit() for char in sifre):
+                hata = "Şifre en az 1 rakam içermelidir."
 
-        return redirect("/login")
+            elif not any(char.isalpha() for char in sifre):
+                hata = "Şifre en az 1 harf içermelidir."
 
-    return render_template("register.html")
+            else:
+                conn = sqlite3.connect("fisler.db")
+                cursor = conn.cursor()
+
+                cursor.execute("""
+                CREATE TABLE IF NOT EXISTS users(
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    ad TEXT,
+                    email TEXT UNIQUE,
+                    sifre TEXT
+                )
+                """)
+
+                cursor.execute("""
+                INSERT INTO users(ad, email, sifre)
+                VALUES(?, ?, ?)
+                """, (ad, email, sifre))
+
+                conn.commit()
+                conn.close()
+
+                return redirect("/login")
+
+        except sqlite3.IntegrityError:
+            hata = "Bu e-posta zaten kayıtlı."
+
+        except Exception as e:
+            hata = "Kayıt sırasında bir hata oluştu."
+
+    return render_template("register.html", hata=hata)
 
 @app.route("/logout")
 def logout():
@@ -365,106 +368,66 @@ def logout():
 @app.route("/dashboard")
 def dashboard():
 
-    user_id = session.get("user_id")
-
-    if not user_id:
+    if "user_id" not in session:
         return redirect("/login")
 
     conn = sqlite3.connect("fisler.db")
     cursor = conn.cursor()
 
-    # Toplam fiş sayısı
-    cursor.execute("""
-        SELECT COUNT(*)
-        FROM fisler
-        WHERE user_id=?
-    """, (user_id,))
+    # kdv kolonu yoksa ekler
+    try:
+        cursor.execute("ALTER TABLE fisler ADD COLUMN kdv REAL DEFAULT 0")
+        conn.commit()
+    except:
+        pass
+
+    cursor.execute("SELECT COUNT(*) FROM fisler WHERE user_id=?", (session["user_id"],))
     toplam_fis = cursor.fetchone()[0]
 
-    # Toplam harcama
-    cursor.execute("""
-        SELECT toplam
-        FROM fisler
-        WHERE user_id=?
-    """, (user_id,))
-    tutarlar = cursor.fetchall()
+    cursor.execute("SELECT toplam FROM fisler WHERE user_id=?", (session["user_id"],))
+    toplamlar = cursor.fetchall()
 
     toplam_harcama = 0
-
-    for t in tutarlar:
+    for t in toplamlar:
         try:
             toplam_harcama += float(str(t[0]).replace(",", "."))
         except:
             pass
 
-    # Toplam KDV
-    cursor.execute("""
-        SELECT SUM(kdv)
-        FROM fisler
-        WHERE user_id=?
-    """, (user_id,))
+    cursor.execute("SELECT kdv FROM fisler WHERE user_id=?", (session["user_id"],))
+    kdvler = cursor.fetchall()
 
-    toplam_kdv = cursor.fetchone()[0]
+    toplam_kdv = 0
+    for k in kdvler:
+        try:
+            toplam_kdv += float(str(k[0]).replace(",", "."))
+        except:
+            pass
 
-    if toplam_kdv is None:
-        toplam_kdv = 0
-
-    # Market sayısı
-    cursor.execute("""
-        SELECT COUNT(*)
-        FROM fisler
-        WHERE kategori='Market'
-        AND user_id=?
-    """, (user_id,))
+    cursor.execute("SELECT COUNT(*) FROM fisler WHERE user_id=? AND kategori LIKE ?", (session["user_id"], "%Market%"))
     market = cursor.fetchone()[0]
 
-    # Yeme İçme sayısı
-    cursor.execute("""
-        SELECT COUNT(*)
-        FROM fisler
-        WHERE kategori='Yeme İçme'
-        AND user_id=?
-    """, (user_id,))
+    cursor.execute("SELECT COUNT(*) FROM fisler WHERE user_id=? AND kategori LIKE ?", (session["user_id"], "%Yeme%"))
     yeme_icme = cursor.fetchone()[0]
 
-    # Teknoloji sayısı
-    cursor.execute("""
-        SELECT COUNT(*)
-        FROM fisler
-        WHERE kategori='Teknoloji'
-        AND user_id=?
-    """, (user_id,))
+    cursor.execute("SELECT COUNT(*) FROM fisler WHERE user_id=? AND kategori LIKE ?", (session["user_id"], "%Teknoloji%"))
     teknoloji = cursor.fetchone()[0]
 
     conn.close()
 
-    kategori_etiketleri = [
-        "Market",
-        "Yeme İçme",
-        "Teknoloji"
-    ]
-
-    kategori_sayilari = [
-        market,
-        yeme_icme,
-        teknoloji
-    ]
-
     return render_template(
-        "dashboard.html",
-        toplam_fis=toplam_fis,
-        toplam_harcama=round(toplam_harcama, 2),
-        toplam_kdv=round(toplam_kdv, 2),
-        market=market,
-        yeme_icme=yeme_icme,
-        teknoloji=teknoloji,
-        kategori_etiketleri=kategori_etiketleri,
-        kategori_sayilari=kategori_sayilari,
-        ocr_text=session.get("ocr_text"),
-        analiz=session.get("analiz"),
-        ai_yorum=session.get("ai_yorum")
-    )
-
+    "dashboard.html",
+    toplam_fis=toplam_fis,
+    toplam_harcama=round(toplam_harcama, 2),
+    toplam_kdv=round(toplam_kdv, 2),
+    market=market,
+    yeme_icme=yeme_icme,
+    teknoloji=teknoloji,
+    analiz=session.get("analiz"),
+    ocr_text=session.get("ocr_text"),
+    ai_yorum=session.get("ai_yorum"),
+    hata=session.pop("hata",None)
+)
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload():
@@ -475,34 +438,22 @@ def upload():
 
         file = request.files.get("receipt")
 
-        if file is None:
-            print("DOSYA GELMEDI")
+        if file is None or file.filename == "":
+            print("DOSYA SECILMEDI")
             return redirect(url_for("dashboard"))
 
         print("FILENAME:", file.filename)
 
-        if file.filename == "":
-            print("DOSYA SECILMEDI")
-            return redirect(url_for("dashboard"))
-
-        os.makedirs(
-            "uploads",
-            exist_ok=True
-        )
+        os.makedirs("uploads", exist_ok=True)
 
         dosya_adi = str(uuid.uuid4()) + ".png"
-
-        file_path = os.path.join(
-            "uploads",
-            dosya_adi
-        )
+        file_path = os.path.join("uploads", dosya_adi)
 
         file.save(file_path)
 
         print("KAYDEDILDI:", file_path)
 
         try:
-
             temiz_resim = resmi_iyilestir(file_path)
 
             ocr_text = pytesseract.image_to_string(
@@ -515,56 +466,61 @@ def upload():
             print(ocr_text)
 
             ai_yorum = ai_fis_analizi(ocr_text)
-
             session["ai_yorum"] = ai_yorum
 
             print("AI YORUM:")
             print(ai_yorum)
 
             analiz = fis_bilgilerini_cek(ocr_text)
-            
-            print("ANALİZ KDV:", analiz["kdv"])
-            print("ANALİZ KDV ORANI:", analiz["kdv_orani"])
-
 
             kategori = kategori_bul(ocr_text)
+            magaza = magaza_bul(ocr_text)
 
-            analiz["magaza"] = magaza_bul(ocr_text)
             analiz["kategori"] = kategori
+            analiz["magaza"] = magaza
 
-            # DASHBOARD'DA GÖSTERMEK İÇİN
+            tarih = analiz.get("tarih", "")
+            toplam = analiz.get("toplam", 0)
+            kdv = analiz.get("kdv", 0)
+
+            kdv_orani = analiz.get("kdv_orani", "Bulunamadı")
+
+            print("ANALİZ:", analiz)
+            print("KDV:", kdv)
+
             session["ocr_text"] = ocr_text
             session["analiz"] = analiz
 
             conn = sqlite3.connect("fisler.db")
             cursor = conn.cursor()
 
-            print("SESSION USER =", session.get("user_id"))
-            cursor.execute(
-    """
-    INSERT INTO fisler
-    (user_id, tarih, toplam, kategori, magaza, kdv, kdv_orani)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-    """,
-    (
-        session["user_id"],
-        analiz["tarih"],
-        analiz["toplam"],
-        analiz["kategori"],
-        analiz["magaza"],
-        analiz["kdv"],
-        analiz["kdv_orani"]
-    )
-)
-        
+            cursor.execute("""
+                INSERT INTO fisler(user_id, magaza, tarih, toplam, kategori, kdv, kdv_orani, ai_yorum, ocr_text)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+""", (
+               session.get("user_id"),
+               magaza,
+               tarih,
+               toplam,
+               kategori,
+               kdv,
+               kdv_orani,
+               ai_yorum,
+               ocr_text
+))
 
+            conn.commit()
+            conn.close()
+
+            print("VERITABANINA KAYDEDILDI")
+
+            return redirect(url_for("dashboard"))
 
         except Exception as e:
-
             print("HATA:")
             print(e)
-
-        return redirect(url_for("dashboard"))
+            session["hata"] = str(e)
+            return redirect(url_for("dashboard"))
 
     return redirect(url_for("dashboard"))
 

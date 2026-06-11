@@ -43,6 +43,12 @@
                 Yeni hesap oluşturarak analiz dünyasına giriş yap.
             </p>
 
+            {% if hata %}
+            <div class="error-message">
+                {{ hata }}
+            </div>
+            {% endif %}
+
             <form action="/register" method="POST">
 
                 <input

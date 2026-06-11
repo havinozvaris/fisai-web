@@ -3,21 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Akıllı Fiş Analiz</title>
-
     <link rel="stylesheet" href="/static/css/style.css">
-    
 </head>
-<body>
-
 <body>
 
 <div class="layout">
 
     <div class="sidebar">
-
-        <div class="logo">
-            📊 FisAI
-        </div>
+        <div class="logo">📊 FisAI</div>
 
         <div class="menu">
             <a href="/dashboard">📊 Anasayfa</a>
@@ -26,176 +19,167 @@
             <a href="/uye_profil">👤 Profil</a>
             <a href="/logout">🚪 Çıkış</a>
         </div>
-
     </div>
 
     <div class="main-content">
-
         <div class="dashboard-container">
 
-    <h1>📊 Akıllı Fiş Analiz</h1>
-    <h2>Merhaba {{ session.get("user_name") }} 👋</h2>
-    <p>Harcamalarını analiz etmeye devam et.</p>
-    
+            <h1>📊 Akıllı Fiş Analiz</h1>
+            <h2>Merhaba {{ session.get("user_name") }} 👋</h2>
+            <p>Harcamalarını analiz etmeye devam et.</p>
 
-    <div class="upload-hero">
+            {% if hata %}
+            <div class="result-box">
+                <h2>⚠️ Hata</h2>
+                <p>{{ hata }}</p>
+            </div>
+            {% endif %}
 
-        <div class="upload-hero-icon">
-            📸
+            <div class="upload-hero">
+                <div class="upload-hero-icon">📸</div>
+
+                <h2>Fiş Fotoğrafı Yükle</h2>
+
+                <p>
+                    Telefon, galeri veya dosya yöneticisinden fiş seçip
+                    anında analiz ettirebilirsiniz.
+                </p>
+
+                <form action="/upload" method="POST" enctype="multipart/form-data">
+
+                    <input
+                        type="file"
+                        id="receipt"
+                        name="receipt"
+                        accept="image/*"
+                        style="display:none"
+                        required
+                    >
+
+                    <button
+                        type="button"
+                        class="btn"
+                        onclick="document.getElementById('receipt').click()"
+                    >
+                        📸 Fiş Seç
+                    </button>
+
+                    <p id="selectedFile">Henüz dosya seçilmedi</p>
+
+                    <br>
+
+                    <button type="submit" class="btn">
+                        🚀 Analizi Başlat
+                    </button>
+
+                </form>
+            </div>
+
+            <div class="stats-container">
+
+                <div class="stat-card">
+                    <h3>📄 Toplam Fiş</h3>
+                    <p>{{ toplam_fis }}</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>💰 Harcama</h3>
+                    <p>{{ toplam_harcama }} TL</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>🛒 Market</h3>
+                    <p>{{ market }}</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>🍔 Yeme İçme</h3>
+                    <p>{{ yeme_icme }}</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>💻 Teknoloji</h3>
+                    <p>{{ teknoloji }}</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>💰 Toplam KDV</h3>
+                    <p>{{ toplam_kdv }} TL</p>
+                </div>
+
+            </div>
+
+            {% if analiz %}
+            <div class="result-box">
+
+                <h2>📄 Son OCR Analizi</h2>
+
+                <div class="summary-item">
+                    <span>Tarih</span>
+                    <strong>{{ analiz["tarih"] }}</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Toplam Tutar</span>
+                    <strong>{{ analiz["toplam"] }} TL</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>KDV</span>
+                    <strong>{{ analiz["kdv"] }} TL</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>KDV Oranı</span>
+                    <strong>{{ analiz["kdv_orani"] }}</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Mağaza</span>
+                    <strong>{{ analiz["magaza"] }}</strong>
+                </div>
+
+                <div class="summary-item">
+                    <span>Kategori</span>
+                    <strong>{{ analiz["kategori"] }}</strong>
+                </div>
+
+                <h3 style="margin-top:25px;">🔍 OCR Tarafından Okunan Metin</h3>
+
+                <pre class="ocr-box">{{ ocr_text }}</pre>
+
+            </div>
+            {% endif %}
+
+            {% if ai_yorum %}
+            <div class="result-box">
+                <h2>🤖 Yapay Zeka Yorumu</h2>
+                <pre class="ocr-box">{{ ai_yorum }}</pre>
+            </div>
+            {% endif %}
+
+            <a
+                href="/clear_dashboard"
+                class="btn"
+                onclick="return confirm('Ekrandaki son analiz temizlensin mi?')"
+                style="background:#f59e0b;"
+            >
+                🧹 Son Analizi Temizle
+            </a>
+
         </div>
+    </div>
 
-        <h2>Fiş Fotoğrafı Yükle</h2>
-
-        <p>
-            Telefon, galeri veya dosya yöneticisinden fiş seçip
-            anında analiz ettirebilirsiniz.
-        </p>
-
-        <form
-    action="/upload"
-    method="POST"
-    enctype="multipart/form-data"
->
-
-    <input
-        type="file"
-        id="receipt"
-        name="receipt"
-        accept="image/*"
-        style="display:none"
-        required
-    >
-
-    <button
-        type="button"
-        class="btn"
-        onclick="document.getElementById('receipt').click()"
-    >
-        📸 Fiş Seç
-    </button>
-
-    <p id="selectedFile">
-        Henüz dosya seçilmedi
-    </p>
-
-    <br>
-
-    <button type="submit" class="btn">
-        🚀 Analizi Başlat
-    </button>
-
-</form>
+</div>
 
 <script>
 document.getElementById("receipt").addEventListener("change", function(){
-
     if(this.files.length > 0){
         document.getElementById("selectedFile").innerText =
             "📄 " + this.files[0].name;
     }
-
 });
 </script>
-
-    </div>
-
-    <div class="stats-container">
-
-        <div class="stat-card">
-            <h3>📄 Toplam Fiş</h3>
-            <p>{{ toplam_fis }}</p>
-        </div>
-
-        <div class="stat-card">
-            <h3>💰 Harcama</h3>
-            <p>{{ toplam_harcama }} TL</p>
-        </div>
-
-        <div class="stat-card">
-            <h3>🛒 Market</h3>
-            <p>{{ market }}</p>
-        </div>
-
-        <div class="stat-card">
-            <h3>🍔 Yeme İçme</h3>
-            <p>{{ yeme_icme }}</p>
-        </div>
-
-        <div class="stat-card">
-            <h3>💻 Teknoloji</h3>
-            <p>{{ teknoloji }}</p>
-        </div>
-      <div class="stat-card">
-    <h3>💰 Toplam KDV</h3>
-    <p>{{ toplam_kdv }} ₺</p>
-</div>
-    </div>
-
-
-
-    {% if analiz %}
-
-    <div class="result-box">
-
-        <h2>📄 Son OCR Analizi</h2>
-
-        <div class="summary-item">
-            <span>Tarih</span>
-            <strong>{{ analiz["tarih"] }}</strong>
-        </div>
-
-        <div class="summary-item">
-            <span>Toplam Tutar</span>
-            <strong>{{ analiz["toplam"] }} TL</strong>
-        </div>
-
-        <div class="summary-item">
-            <span>Mağaza</span>
-            <strong>{{ analiz["magaza"] }}</strong>
-        </div>
-
-        <div class="summary-item">
-            <span>Kategori</span>
-            <strong>{{ analiz["kategori"] }}</strong>
-        </div>
-
-        <h3 style="margin-top:25px;">
-            🔍 OCR Tarafından Okunan Metin
-        </h3>
-
-        <pre class="ocr-box">{{ ocr_text }}</pre>
-
-    </div>
-
-    {% endif %}
-
-    {% if ai_yorum %}
-
-    <div class="result-box">
-
-        <h2>🤖 Yapay Zeka Yorumu</h2>
-
-        <pre class="ocr-box">{{ ai_yorum }}</pre>
-
-    </div>
-
-    {% endif %}
-
-        <a
-            href="/clear_dashboard"
-            class="btn"
-            onclick="return confirm('Ekrandaki son analiz temizlensin mi?')"
-            style="background:#f59e0b;"
-        >
-            🧹 Son Analizi Temizle
-        </a>
-
-        
-            </div>
-
-    </div>
-
-</div>
 
 </body>
 </html>
