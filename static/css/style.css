@@ -986,3 +986,59 @@ MOBILE MENU
     grid-template-columns: repeat(5,1fr);
     gap:20px;
 }
+
+
+/* PROFILE */
+
+.profile-card{
+    max-width:900px;
+    margin:40px auto;
+    background:#182235;
+    border:1px solid #2b3850;
+    border-radius:24px;
+    padding:50px;
+}
+
+.avatar{
+    width:110px;
+    height:110px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#4f46e5,#7c3aed);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    font-size:48px;
+    font-weight:700;
+    margin:0 auto 20px;
+}
+
+.profile-card h2{
+    text-align:center;
+    color:white;
+    font-size:52px;
+    margin-bottom:10px;
+}
+
+.mail{
+    text-align:center;
+    color:#94a3b8;
+    margin-bottom:40px;
+    font-size:24px;
+}
+
+.profile-card h3{
+    color:white;
+    margin:35px 0 15px;
+    font-size:22px;
+}
+
+.profile-card input{
+    width:100%;
+    padding:18px;
+    background:#0f172a;
+    border:1px solid #334155;
+    border-radius:14px;
+    color:white;
+    margin-bottom:18px;
+}

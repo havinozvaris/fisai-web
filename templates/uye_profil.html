@@ -1,6 +1,11 @@
+<head>
+    <meta charset="UTF-8">
+    <title>Profil</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
 <div class="layout">
 
-   
     <div class="sidebar">
 
         <div class="logo">
@@ -17,229 +22,65 @@
 
     </div>
 
-    <!-- İçerik -->
-    <div class="content">
+    <div class="main-content">
 
-        <div class="profile-card">
+        <div class="dashboard-container">
 
-    <div class="avatar">
-       {{ user.name[:1] }}
+            <div class="profile-card">
+
+                <div class="avatar">
+                    {{ user.name[:1] }}
+                </div>
+
+                <h2>{{ user.name }}</h2>
+
+                <p class="mail">
+                    {{ user.email }}
+                </p>
+
+                <form method="POST" action="{{ url_for('profil_guncelle') }}">
+
+                    <h3>👤 Bilgilerimi Güncelle</h3>
+
+                    <input
+                        type="email"
+                        name="email"
+                        value="{{ user.email }}"
+                        placeholder="E-posta"
+                        required>
+
+                    <button class="btn" type="submit">
+                        Bilgileri Güncelle
+                    </button>
+
+                </form>
+
+                <form method="POST" action="{{ url_for('sifre_degistir') }}">
+
+                    <h3>🔒 Şifre Değiştir</h3>
+
+                    <input
+                        type="password"
+                        name="old_password"
+                        placeholder="Eski Şifre"
+                        required>
+
+                    <input
+                        type="password"
+                        name="new_password"
+                        placeholder="Yeni Şifre"
+                        required>
+
+                    <button class="btn" type="submit">
+                        Şifreyi Güncelle
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <h2>{{ user.name }}</h2>
-    <p class="mail">{{ user.email }}</p>
-
-    <form method="POST" action="{{ url_for('profil_guncelle') }}">
-
-        <h3>👤 Bilgilerimi Güncelle</h3>
-
-        <input
-            type="email"
-            name="email"
-            value="{{ user.email }}"
-            placeholder="E-posta"
-            required>
-
-        <button class="btn" type="submit">
-            Bilgileri Güncelle
-        </button>
-
-    </form>
-
-    <form method="POST" action="{{ url_for('sifre_degistir') }}">
-
-        <h3>🔒 Şifre Değiştir</h3>
-
-        <input
-            type="password"
-            name="old_password"
-            placeholder="Eski Şifre"
-            required>
-
-        <input
-            type="password"
-            name="new_password"
-            placeholder="Yeni Şifre"
-            required>
-
-        <button class="btn" type="submit">
-            Şifreyi Güncelle
-        </button>
-
-    </form>
-
 </div>
-
-    </div>
-
-</div>
-<style>
-
-/* ===== PROFILE PAGE ===== */
-
-.layout{
-    display:flex;
-    min-height:100vh;
-    background:#050816;
-}
-
-/* SIDEBAR */
-
-.sidebar{
-    width:260px;
-    background:#0f172a;
-    border-right:1px solid rgba(255,255,255,0.08);
-    padding:30px 20px;
-    position:fixed;
-    left:0;
-    top:0;
-    height:100vh;
-}
-
-.logo{
-    color:white;
-    font-size:26px;
-    font-weight:700;
-    margin-bottom:40px;
-}
-
-.menu{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-}
-
-.menu a{
-    color:#cbd5e1;
-    text-decoration:none;
-    padding:14px 18px;
-    border-radius:12px;
-    transition:.3s;
-    font-weight:500;
-}
-
-.menu a:hover,
-.menu a.active{
-    background:#1e293b;
-    color:white;
-}
-
-/* CONTENT */
-
-.content{
-    flex:1;
-    margin-left:260px;
-    padding:50px;
-    display:flex;
-    justify-content:center;
-}
-
-/* CARD */
-
-.profile-card{
-    width:100%;
-    max-width:700px;
-    background:#0f172a;
-    border:1px solid rgba(255,255,255,0.08);
-    border-radius:24px;
-    padding:40px;
-    box-shadow:0 20px 40px rgba(0,0,0,.35);
-}
-
-.avatar{
-    width:90px;
-    height:90px;
-    border-radius:50%;
-    background:linear-gradient(135deg,#4f46e5,#7c3aed);
-    color:white;
-    font-size:38px;
-    font-weight:700;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin:auto;
-}
-
-.profile-card h2{
-    text-align:center;
-    color:white;
-    margin-top:15px;
-}
-
-.mail{
-    text-align:center;
-    color:#94a3b8;
-    margin-bottom:30px;
-}
-
-.info{
-    margin-bottom:25px;
-}
-
-.box{
-    background:#111c34;
-    border:1px solid rgba(255,255,255,.06);
-    border-radius:16px;
-    padding:18px;
-}
-
-.box label{
-    color:#94a3b8;
-    font-size:14px;
-}
-
-.box p{
-    color:white;
-    margin-top:8px;
-    font-size:17px;
-}
-
-.profile-card h3{
-    color:white;
-    margin-top:30px;
-    margin-bottom:15px;
-}
-
-.profile-card form{
-    display:flex;
-    flex-direction:column;
-}
-
-.profile-card input{
-    width:100%;
-    padding:14px 16px;
-    margin-bottom:14px;
-    background:#111c34;
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:12px;
-    color:white;
-    font-size:15px;
-}
-
-.profile-card input:focus{
-    outline:none;
-    border-color:#4f46e5;
-}
-
-.btn{
-    border:none;
-    border-radius:12px;
-    padding:14px;
-    cursor:pointer;
-    color:white;
-    font-weight:600;
-    font-size:15px;
-    background:linear-gradient(
-        135deg,
-        #4f46e5,
-        #7c3aed
-    );
-    transition:.3s;
-}
-
-.btn:hover{
-    transform:translateY(-2px);
-}
-
-
-</style>
