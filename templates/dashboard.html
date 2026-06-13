@@ -65,9 +65,7 @@
                     </button>
 
                     <p id="selectedFile">Henüz dosya seçilmedi</p>
-
-                    <br>
-
+              
                     <button type="submit" class="btn">
                         🚀 Analizi Başlat
                     </button>
@@ -155,14 +153,17 @@
             </div>
             {% endif %}
 
-            <a
-                href="/clear_dashboard"
-                class="btn"
-                onclick="return confirm('Ekrandaki son analiz temizlensin mi?')"
-                style="background:#f59e0b;"
-            >
-                🧹 Son Analizi Temizle
-            </a>
+           <div class="action-buttons">
+
+    <a
+        href="/clear_dashboard"
+        class="btn warning-btn"
+        onclick="return confirm('Ekrandaki son analiz temizlensin mi?')"
+    >
+        🧹 Son Analizi Temizle
+    </a>
+
+</div>
 
         </div>
     </div>
