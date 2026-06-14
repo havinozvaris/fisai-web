@@ -509,10 +509,10 @@ def upload():
 
 
             ocr_text = pytesseract.image_to_string(
-            temiz_resim,
-            lang="tur+eng",
-            config="--oem 3 --psm 6"
-)
+                temiz_resim,
+                lang="eng",
+                config="--psm 6"
+            )
 
             print("OCR SONUCU:")
             print(ocr_text)
