@@ -6,11 +6,12 @@ import sqlite3
 import pytesseract
 import uuid
 from openai import OpenAI
+import requests
 
 if os.name == "nt":
-    pytesseract.pytesseract.tesseract_cmd = (
-        r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-    )
+    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+else:
+    pytesseract.pytesseract.tesseract_cmd = "tesseract"     
 
 from dotenv import load_dotenv
 import os
@@ -488,6 +489,10 @@ def upload():
 
         try:
             temiz_resim = resmi_iyilestir(file_path)
+
+            import platform
+            print("SISTEM:", platform.system())
+            print("TESSERACT:", pytesseract.pytesseract.tesseract_cmd)
 
             ocr_text = pytesseract.image_to_string(
                 temiz_resim,
