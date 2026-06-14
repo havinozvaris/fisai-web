@@ -509,11 +509,11 @@ def upload():
 
             print("OCR BASLIYOR")
 
-            ocr_text = pytesseract.image_to_string(
-                temiz_resim,
-                lang="eng",
-                config="--psm 6"
-            )
+            print("OCR BASLIYOR")
+
+            ocr_text = "TEST OCR"
+
+            print("OCR BITTI")
 
             print("OCR BITTI")
 
