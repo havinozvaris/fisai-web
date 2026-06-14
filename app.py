@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import os
 import re
 import cv2
@@ -1043,7 +1043,8 @@ def profil_guncelle():
     conn.commit()
     conn.close()
 
-    return redirect("/uye_profil")
+    flash("✅ Bilgiler başarıyla güncellendi.", "success")
+    return redirect(url_for("uye_profil"))
 
 @app.route("/sifre_degistir", methods=["POST"])
 def sifre_degistir():
@@ -1067,7 +1068,8 @@ def sifre_degistir():
 
     if mevcut_sifre != eski:
         conn.close()
-        return "Eski şifre yanlış"
+        flash("❌ Eski şifre yanlış!", "error")
+        return redirect(url_for("uye_profil"))
 
     cursor.execute("""
     UPDATE users
@@ -1081,7 +1083,8 @@ def sifre_degistir():
     conn.commit()
     conn.close()
 
-    return redirect("/uye_profil")
+    flash("✅ Şifreniz başarıyla güncellendi.", "success")
+    return redirect(url_for("uye_profil"))
 
 
 

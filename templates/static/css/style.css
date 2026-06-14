@@ -251,3 +251,22 @@ body {
     .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #1e293b; }
     .cards { grid-template-columns: 1fr; }
 }
+
+.flash-message{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:20px;
+    text-align:center;
+    font-weight:bold;
+}
+
+.flash-message.error{
+    background:#ef4444;
+    color:white;
+}
+
+.flash-message.success{
+    background:#22c55e;
+    color:white;
+}
