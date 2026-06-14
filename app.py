@@ -862,6 +862,82 @@ def reports():
 
     magazalar = cursor.fetchall()
 
+    yorumlar = []
+
+    # En çok kategori
+    if kategori_adi == "Market":
+        yorumlar.append(
+            "Harcamalarınızın büyük kısmı market alışverişlerinden oluşuyor."
+        )
+
+    elif kategori_adi == "Teknoloji":
+        yorumlar.append(
+            "Teknoloji kategorisi bu dönemde en yüksek harcama kaleminiz."
+        )
+
+    elif kategori_adi == "Yeme İçme":
+        yorumlar.append(
+            "Yeme içme harcamalarınız dikkat çekici seviyede."
+        )
+
+    # En çok mağaza
+    if len(magazalar) > 0:
+        yorumlar.append(
+            f"En sık alışveriş yaptığınız mağaza {magazalar[0][0]}."
+        )
+
+    # Ortalama fiş
+    if ortalama > 300:
+        yorumlar.append(
+            "Ortalama fiş tutarınız yüksek seviyede."
+        )
+
+    elif ortalama < 100:
+        yorumlar.append(
+            "Ortalama fiş tutarınız kontrollü görünüyor."
+        )
+
+            # Tasarruf fırsatı
+
+    tasarruf_tutari = 0
+    tasarruf_mesaji = "Tasarruf önerisi oluşturulamadı."
+
+    if kategori_adi == "Market":
+
+        tasarruf_tutari = round(
+            kategori_tutari * 0.05,
+            2
+        )
+
+        tasarruf_mesaji = (
+            f"Market harcamalarınızı %5 azaltırsanız yaklaşık "
+            f"{tasarruf_tutari} TL tasarruf edebilirsiniz."
+        )
+
+    elif kategori_adi == "Yeme İçme":
+
+        tasarruf_tutari = round(
+            kategori_tutari * 0.10,
+            2
+        )
+
+        tasarruf_mesaji = (
+            f"Yeme içme harcamalarınızı %10 azaltırsanız yaklaşık "
+            f"{tasarruf_tutari} TL tasarruf edebilirsiniz."
+        )
+
+    elif kategori_adi == "Teknoloji":
+
+        tasarruf_tutari = round(
+            kategori_tutari * 0.15,
+            2
+        )
+
+        tasarruf_mesaji = (
+            f"Teknoloji alışverişlerinde daha planlı davranarak yaklaşık "
+            f"{tasarruf_tutari} TL tasarruf edebilirsiniz."
+        )
+     
     # Aylık harcamalar
     ay_etiketleri = []
     ay_tutarlari = []
@@ -871,8 +947,6 @@ def reports():
             ay_etiketleri.append(ay_isimleri[ay_no])
             ay_tutarlari.append(round(aylar[ay_no], 2))
 
-            kategori_adi=kategori_adi,
-            kategori_tutari=kategori_tutari
 
     conn.close()
 
@@ -887,7 +961,13 @@ def reports():
         kategori_sayilari=kategori_sayilari,
         magazalar=magazalar,
         ay_etiketleri=ay_etiketleri,
-        ay_tutarlari=ay_tutarlari
+        ay_tutarlari=ay_tutarlari,
+        kategori_adi=kategori_adi,
+        kategori_tutari=kategori_tutari,
+        yorumlar=yorumlar,
+        tasarruf_tutari=tasarruf_tutari,
+        tasarruf_mesaji=tasarruf_mesaji
+        
     )
 
 

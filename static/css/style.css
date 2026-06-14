@@ -533,7 +533,7 @@ DASHBOARD
 }
 
 .summary-item span{
-    color:#94a3b8;
+    color:white;
 }
 
 .summary-item strong{
@@ -1241,3 +1241,30 @@ MOBILE MENU
     margin-top:20px;
     margin-bottom:10px;
 }
+
+.ai-section{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.ai-section .stat-card{
+    min-height:260px;
+}
+
+.ai-card p{
+    font-size:16px !important;
+    font-weight:400 !important;
+    color:#cbd5e1 !important;
+    text-align:left;
+    line-height:1.8;
+    margin-bottom:10px;
+}
+
+.reports-grid{
+    display:grid;
+    grid-template-columns: 1fr 1.5fr 1fr;
+    gap:25px;
+}
+
