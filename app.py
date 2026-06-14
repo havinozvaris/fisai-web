@@ -137,8 +137,6 @@ def magaza_bul(ocr_text):
 
 def resmi_iyilestir(dosya_yolu):
 
-    print("Dosya yolu:", dosya_yolu)
-
     img = cv2.imread(dosya_yolu)
 
     if img is None:
@@ -148,9 +146,12 @@ def resmi_iyilestir(dosya_yolu):
 
     print(f"Orijinal boyut: {w}x{h}")
 
-    # Render Free RAM koruması
-    if w > 1800:
-        oran = 1800 / w
+    # Telefonlardan gelen büyük resimleri küçült
+    max_width = 600
+
+    if w > max_width:
+
+        oran = max_width / w
 
         yeni_w = int(w * oran)
         yeni_h = int(h * oran)
@@ -168,20 +169,7 @@ def resmi_iyilestir(dosya_yolu):
         cv2.COLOR_BGR2GRAY
     )
 
-    gri = cv2.GaussianBlur(
-        gri,
-        (3, 3),
-        0
-    )
-
-    _, esik = cv2.threshold(
-        gri,
-        0,
-        255,
-        cv2.THRESH_BINARY + cv2.THRESH_OTSU
-    )
-
-    return esik
+    return gri
 
 # -------------------------
 # OCR ANALİZ
@@ -511,7 +499,7 @@ def upload():
             ocr_text = pytesseract.image_to_string(
                 temiz_resim,
                 lang="eng",
-                config="--psm 6"
+                config="--oem 1 --psm 11"
             )
 
             print("OCR SONUCU:")
