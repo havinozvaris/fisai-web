@@ -511,8 +511,8 @@ def upload():
 
             ocr_text = pytesseract.image_to_string(
                 temiz_resim,
-                lang="tur+eng",
-                config="--oem 3 --psm 6"
+                lang="eng",
+                config="--psm 6"
             )
 
             print("OCR BITTI")
