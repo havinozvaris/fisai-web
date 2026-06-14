@@ -103,7 +103,7 @@ def kategori_bul(ocr_text):
     if "a101" in text or "migros" in text or "bim" in text or "sok" in text:
         return "Market"
 
-    elif "starbucks" in text or "burger" in text or "mcdonald" in text:
+    elif "starbucks" in text or "burger" in text or "mcdonald" in text or "popeyes" in text or "kfc" in text or "pizza" in text:
         return "Yeme İçme"
 
     elif "teknosa" in text or "vatan" in text or "media markt" in text:
@@ -133,9 +133,17 @@ def magaza_bul(ocr_text):
     elif "teknosa" in text:
         return "Teknosa"
     
-    if "popoyes" in text:
-        return "Yeme İçme"
- 
+    if "popeyes" in text:
+        return "Popeyes"
+    
+    if "kfc" in text:
+        return "KFC"
+    
+    if "pizza" in text:
+        return "Pizza Hut"
+    
+
+
     return "Bilinmiyor"
 
 def resmi_iyilestir(dosya_yolu):
@@ -818,6 +826,29 @@ def reports():
     for kategori in kategori_verileri:
         kategori_etiketleri.append(kategori[0])
         kategori_sayilari.append(kategori[1])
+            # En çok harcanan kategori
+
+    cursor.execute("""
+        SELECT kategori, SUM(
+            CAST(REPLACE(toplam, ',', '.') AS REAL)
+        ) as toplam_tutar
+        FROM fisler
+        WHERE user_id=?
+        GROUP BY kategori
+        ORDER BY toplam_tutar DESC
+        LIMIT 1
+    """, (user_id,))
+
+    en_kategori = cursor.fetchone()
+
+    if en_kategori:
+        kategori_adi = en_kategori[0]
+        kategori_tutari = round(en_kategori[1], 2)
+    else:
+        kategori_adi = "Yok"
+        kategori_tutari = 0
+
+        
 
     # En çok gidilen mağazalar (Sadece giriş yapan kullanıcı)
     cursor.execute("""
@@ -839,6 +870,9 @@ def reports():
         if aylar[ay_no] > 0:
             ay_etiketleri.append(ay_isimleri[ay_no])
             ay_tutarlari.append(round(aylar[ay_no], 2))
+
+            kategori_adi=kategori_adi,
+            kategori_tutari=kategori_tutari
 
     conn.close()
 
