@@ -126,7 +126,40 @@
                 {% endfor %}
             </div>
 
+
         </div>
+
+        <div class="chart-box" style="margin-top:20px;">
+
+    <h3>📄 Son 5 Fiş</h3>
+
+    <table class="receipt-table">
+
+        <thead>
+            <tr>
+                <th>Tarih</th>
+                <th>Mağaza</th>
+                <th>Kategori</th>
+                <th>Toplam</th>
+                <th>KDV</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for fis in son_fisler %}
+            <tr>
+                <td>{{ fis[0] }}</td>
+                <td>{{ fis[1] }}</td>
+                <td>{{ fis[2] }}</td>
+                <td>{{ fis[3] }} TL</td>
+                <td>{{ fis[4] }} TL</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
 
            
 

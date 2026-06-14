@@ -1268,3 +1268,20 @@ MOBILE MENU
     gap:25px;
 }
 
+.receipt-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.receipt-table th,
+.receipt-table td{
+    padding:12px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    text-align:left;
+}
+
+.receipt-table th{
+    color:#8b5cf6;
+    font-weight:600;
+}
+

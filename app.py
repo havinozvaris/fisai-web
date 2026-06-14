@@ -862,6 +862,16 @@ def reports():
 
     magazalar = cursor.fetchall()
 
+    cursor.execute("""
+        SELECT tarih, magaza, kategori, toplam, kdv
+        FROM fisler
+        WHERE user_id=?
+        ORDER BY id DESC
+        LIMIT 5
+    """, (user_id,))
+
+    son_fisler = cursor.fetchall()
+
     yorumlar = []
 
     # En çok kategori
@@ -966,7 +976,8 @@ def reports():
         kategori_tutari=kategori_tutari,
         yorumlar=yorumlar,
         tasarruf_tutari=tasarruf_tutari,
-        tasarruf_mesaji=tasarruf_mesaji
+        tasarruf_mesaji=tasarruf_mesaji,
+        son_fisler=son_fisler
         
     )
 
