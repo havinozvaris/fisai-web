@@ -135,7 +135,6 @@ def magaza_bul(ocr_text):
 
     return "Bilinmiyor"
 
-
 def resmi_iyilestir(dosya_yolu):
 
     print("Dosya yolu:", dosya_yolu)
@@ -145,13 +144,28 @@ def resmi_iyilestir(dosya_yolu):
     if img is None:
         raise Exception(f"Resim okunamadı -> {dosya_yolu}")
 
-    gri = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    h, w = img.shape[:2]
 
-    gri = cv2.resize(
-        gri,
-        None,
-        fx=2,
-        fy=2
+    print(f"Orijinal boyut: {w}x{h}")
+
+    # Render Free RAM koruması
+    if w > 1800:
+        oran = 1800 / w
+
+        yeni_w = int(w * oran)
+        yeni_h = int(h * oran)
+
+        img = cv2.resize(
+            img,
+            (yeni_w, yeni_h),
+            interpolation=cv2.INTER_AREA
+        )
+
+        print(f"Küçültüldü: {yeni_w}x{yeni_h}")
+
+    gri = cv2.cvtColor(
+        img,
+        cv2.COLOR_BGR2GRAY
     )
 
     gri = cv2.GaussianBlur(
