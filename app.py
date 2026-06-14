@@ -700,32 +700,51 @@ def edit_receipt(id):
 
     return render_template("edit.html", fis=fis)
 
+
+
+
 @app.route("/reports")
 def reports():
+
+    user_id = session.get("user_id")
+
+    if not user_id:
+        return redirect("/login")
 
     conn = sqlite3.connect("fisler.db")
     cursor = conn.cursor()
 
-    cursor.execute("SELECT COUNT(*) FROM fisler")
+    # Toplam fiş sayısı
+    cursor.execute("""
+        SELECT COUNT(*)
+        FROM fisler
+        WHERE user_id=?
+    """, (user_id,))
     toplam_fis = cursor.fetchone()[0]
 
-    cursor.execute("SELECT tarih, toplam FROM fisler")
+    # Toplam KDV
+    cursor.execute("""
+        SELECT SUM(kdv)
+        FROM fisler
+        WHERE user_id=?
+    """, (user_id,))
+
+    toplam_kdv = cursor.fetchone()[0]
+
+    if toplam_kdv is None:
+        toplam_kdv = 0
+
+    # Tarih ve toplam bilgileri
+    cursor.execute("""
+        SELECT tarih, toplam
+        FROM fisler
+        WHERE user_id=?
+    """, (user_id,))
+
     veriler = cursor.fetchall()
 
     toplam_harcama = 0
     en_buyuk = 0
-
-    # TOPLAM KDV
-    cursor.execute("SELECT kdv FROM fisler")
-    kdvler = cursor.fetchall()
-
-    toplam_kdv = 0
-
-    for k in kdvler:
-        try:
-            toplam_kdv += float(str(k[0]).replace(",", "."))
-        except:
-            pass
 
     aylar = {
         "01": 0,
@@ -757,6 +776,7 @@ def reports():
         "12": "Aralık"
     }
 
+    # Harcama hesapları
     for tarih, toplam in veriler:
 
         try:
@@ -778,16 +798,19 @@ def reports():
         except:
             pass
 
+    # Ortalama fiş tutarı
     ortalama = round(
         toplam_harcama / toplam_fis,
         2
     ) if toplam_fis > 0 else 0
 
+    # Kategori dağılımı (Sadece giriş yapan kullanıcı)
     cursor.execute("""
         SELECT kategori, COUNT(*)
         FROM fisler
+        WHERE user_id=?
         GROUP BY kategori
-    """)
+    """, (user_id,))
 
     kategori_verileri = cursor.fetchall()
 
@@ -798,16 +821,19 @@ def reports():
         kategori_etiketleri.append(kategori[0])
         kategori_sayilari.append(kategori[1])
 
+    # En çok gidilen mağazalar (Sadece giriş yapan kullanıcı)
     cursor.execute("""
         SELECT magaza, COUNT(*)
         FROM fisler
+        WHERE user_id=?
         GROUP BY magaza
         ORDER BY COUNT(*) DESC
         LIMIT 5
-    """)
+    """, (user_id,))
 
     magazalar = cursor.fetchall()
 
+    # Aylık harcamalar
     ay_etiketleri = []
     ay_tutarlari = []
 
@@ -831,6 +857,12 @@ def reports():
         ay_etiketleri=ay_etiketleri,
         ay_tutarlari=ay_tutarlari
     )
+
+
+
+
+
+
 
 @app.route("/uye_profil")
 def uye_profil():
