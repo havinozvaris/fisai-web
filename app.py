@@ -132,41 +132,25 @@ def magaza_bul(ocr_text):
 
     elif "teknosa" in text:
         return "Teknosa"
-
+    
+    if "popoyes" in text:
+        return "Yeme İçme"
+ 
     return "Bilinmiyor"
 
 def resmi_iyilestir(dosya_yolu):
 
-    print("Dosya yolu:", dosya_yolu)
-
     img = cv2.imread(dosya_yolu)
 
     if img is None:
-        raise Exception(f"Resim okunamadı -> {dosya_yolu}")
+        raise Exception("Resim okunamadı")
 
-    gri = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-    gri = cv2.resize(
-        gri,
-        None,
-        fx=2,
-        fy=2
+    gri = cv2.cvtColor(
+        img,
+        cv2.COLOR_BGR2GRAY
     )
 
-    gri = cv2.GaussianBlur(
-        gri,
-        (3, 3),
-        0
-    )
-
-    _, esik = cv2.threshold(
-        gri,
-        0,
-        255,
-        cv2.THRESH_BINARY + cv2.THRESH_OTSU
-    )
-
-    return esik
+    return gri
 
 # -------------------------
 # OCR ANALİZ
@@ -179,6 +163,7 @@ def fis_bilgilerini_cek(ocr_text):
     kdv_orani = "Bulunamadı"
 
     tarih_match = re.search(r"\d{2}[./]\d{2}[./]\d{4}", ocr_text)
+
     if tarih_match:
         tarih = tarih_match.group()
 
@@ -186,39 +171,52 @@ def fis_bilgilerini_cek(ocr_text):
     oranlar = []
 
     for satir in satirlar:
+
         temiz_satir = satir.strip()
         kucuk = temiz_satir.lower()
 
-        # SADECE gerçek TOPLAM satırı
-        if re.match(r"^toplam", kucuk):
-            toplam_match = re.search(r"\d+[.,]\d{2}", temiz_satir)
+        # TOPLAM
+        if "toplam" in kucuk and "topkdv" not in kucuk:
+
+            temiz_toplam = temiz_satir.replace(" ", "")
+
+            toplam_match = re.search(
+                r"(\d{1,3}(?:\.\d{3})*,\d{2})",
+                temiz_toplam
+            )
+
             if toplam_match:
-                toplam = toplam_match.group()
+                toplam = toplam_match.group(1)
 
-        # KDV satırları
-        if "kdv" in kucuk:
-            sayilar = re.findall(r"\d+[.,]\d{2}", temiz_satir)
+        # TOPKDV
+        if "topkdv" in kucuk:
 
-            if sayilar:
+            temiz_kdv = temiz_satir.replace(" ", "")
+
+            kdv_match = re.search(
+                r"(\d{1,3}(?:\.\d{3})*,\d{2})",
+                temiz_kdv
+            )
+
+            if kdv_match:
+
                 try:
-                    kdv += float(sayilar[-1].replace(",", "."))
+                    kdv = float(
+                        kdv_match.group(1)
+                        .replace(".", "")
+                        .replace(",", ".")
+                    )
                 except:
                     pass
 
-            # OCR hatalarını da yakala
-            if any(x in temiz_satir for x in ["241","941","%1"]):
-                oranlar.append("%1")
+        # KDV ORANI
+        oran_match = re.findall(r"%\d{1,2}", temiz_satir)
 
-            if any(x in temiz_satir for x in ["9010","910","%10"]):
-                 oranlar.append("%10")
+        for oran in oran_match:
+            oranlar.append(oran)
 
-            if any(x in temiz_satir for x in ["918","%18"]):
-                oranlar.append("%18")
-
-            if any(x in temiz_satir for x in ["908","%8"]):
-                oranlar.append("%8")
-            if oranlar:
-                kdv_orani = ", ".join(sorted(set(oranlar)))
+    if oranlar:
+        kdv_orani = ", ".join(sorted(set(oranlar)))
 
     return {
         "tarih": tarih,
