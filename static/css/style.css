@@ -754,12 +754,12 @@ RESPONSIVE
 
 .result-box h2,
 .result-box h3{
-    color:#ffffff;
+    color:#c7b4e4;
     margin-bottom:25px;
 }
 
 .result-box .summary-item{
-    background:#1e293b;
+    background:#360a62;
      border:1px solid rgba(255,255,255,.05);
     padding:12px 15px;
     border-radius:10px;
@@ -767,12 +767,27 @@ RESPONSIVE
 }
 
 .result-box .summary-item span{
-    color:#94a3b8;
+    color:white;
 }
 
 .result-box .summary-item strong{
     color:#ffffff;
     font-weight:700;
+}
+@media(max-width:768px){
+
+    .result-box{
+        padding:20px;
+    }
+
+    .summary-item{
+        padding:10px 14px;
+    }
+
+    .summary-item span,
+    .summary-item strong{
+        font-size:14px;
+    }
 }
 
 /* =========================
@@ -1095,4 +1110,134 @@ MOBILE MENU
     color:#94a3b8;
     font-size:15px;
     min-height:22px;
+}
+
+
+.filters{
+    display:flex;
+    gap:12px;
+    margin:20px 0;
+    flex-wrap:wrap;
+}
+
+.filters input,
+.filters select{
+    background:#18233f;
+    color:white;
+    border:1px solid #2c3d63;
+    padding:12px;
+    border-radius:10px;
+    min-width:200px;
+}
+
+.filters input:focus,
+.filters select:focus{
+    outline:none;
+    border-color:#6c63ff;
+}
+
+.search-result{
+    color:#aab0c5;
+    margin-bottom:20px;
+    font-size:15px;
+}
+
+/* ANALİZ ALANI */
+
+.analysis-grid-bottom{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:25px;
+    margin-top:25px;
+}
+
+@media(max-width:1100px){
+    .analysis-grid-bottom{
+        grid-template-columns:1fr;
+    }
+}
+
+/* OCR KUTUSU */
+
+.fixed-box{
+    height:450px;
+    overflow-y:auto;
+
+    background:#ffffff;
+    color:#111827;
+
+    border:1px solid #dbe4ff;
+    border-radius:14px;
+
+    padding:20px;
+
+    white-space:pre-wrap;
+
+    font-family:Consolas, monospace;
+
+    box-shadow:
+    inset 0 0 0 1px rgba(0,0,0,.03),
+    0 10px 25px rgba(0,0,0,.08);
+}
+
+/* AI KUTUSU */
+
+.ai-box{
+    height:450px;
+    overflow-y:auto;
+
+    background:#111c3d;
+    color:#e2e8f0;
+
+    border:1px solid rgba(139,92,246,.35);
+
+    border-radius:16px;
+
+    padding:28px;
+
+    line-height:1.9;
+
+    white-space:pre-wrap;
+}
+
+/* AI İÇ BAŞLIKLARI */
+
+.ai-section-title{
+    color:#a855f7;
+
+    font-size:22px;
+    font-weight:700;
+
+    margin-top:25px;
+    margin-bottom:15px;
+}
+
+/* PUAN KARTI */
+
+.score{
+    margin-top:30px;
+
+    background:rgba(168,85,247,.12);
+
+    border:1px solid rgba(168,85,247,.35);
+
+    border-radius:16px;
+
+    padding:20px;
+
+    text-align:center;
+
+    color:#c084fc;
+
+    font-size:32px;
+    font-weight:700;
+}
+
+.ai-title{
+    display:block;
+    color:#b07cff;
+    font-size:22px;
+    font-weight:700;
+    margin-top:20px;
+    margin-bottom:10px;
 }

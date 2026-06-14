@@ -229,17 +229,47 @@ def fis_bilgilerini_cek(ocr_text):
 def ai_fis_analizi(ocr_text):
 
     prompt = f"""
+Sen bir finansal harcama analiz uzmanısın.
+
 Aşağıdaki OCR ile okunmuş fiş metnini analiz et.
 
-Cevabı markdown kullanmadan, sadece şu formatta ver:
+Analiz sırasında:
 
-Mağaza: ...
-Tarih: ...
-Toplam tutar: ...
-Kategori: ...
-Harcama yorumu: ...
+- Fişteki ürünleri incele.
+- Harcama alışkanlığını yorumla.
+- Gereksiz veya lüks harcamaları belirt.
+- Tasarruf önerileri ver.
+- OCR kaynaklı olabilecek hataları tespit et.
+- Fiş toplamı ile ürün fiyatlarını karşılaştır.
+- Mantıksız görünen fiyatları özellikle belirt.
+- Büyük ihtimalle yanlış okunmuş ürün veya tutarlar varsa tahmini doğru değeri yaz.
+- Kullanıcıya 100 üzerinden harcama puanı ver.
 
-Fiş metni:
+Cevabı aşağıdaki formatta oluştur:
+
+HARCAMA_OZETI:
+...
+
+DIKKAT_CEKENLER:
+- ...
+- ...
+- ...
+
+OCR_HATALARI:
+- ...
+- ...
+- ...
+
+TASARRUF_ONERISI:
+...
+
+PUAN:
+...
+
+GENEL_DEGERLENDIRME:
+...
+
+Fiş Metni:
 {ocr_text}
 """
 
@@ -466,6 +496,36 @@ def upload():
             print(ocr_text)
 
             ai_yorum = ai_fis_analizi(ocr_text)
+            
+            ai_yorum = ai_yorum.replace(
+                "HARCAMA_OZETI:",
+                '<span class="ai-title">📊 Harcama Özeti</span>'
+            )
+
+            ai_yorum = ai_yorum.replace(
+                "DIKKAT_CEKENLER:",
+                '<span class="ai-title">⚠️ Dikkat Çeken Noktalar</span>'
+            )
+
+            ai_yorum = ai_yorum.replace(
+                "OCR_HATALARI:",
+                '<span class="ai-title">🔍 OCR Hata Kontrolü</span>'
+            )
+
+            ai_yorum = ai_yorum.replace(
+                "TASARRUF_ONERISI:",
+                '<span class="ai-title">💰 Tasarruf Önerisi</span>'
+            )
+
+            ai_yorum = ai_yorum.replace(
+                "GENEL_DEGERLENDIRME:",
+                '<span class="ai-title">⭐ Genel Değerlendirme</span>'
+            )
+
+            ai_yorum = ai_yorum.replace(
+                "PUAN:",
+                '<span class="ai-title">🏆 Harcama Puanı</span>'
+            )
             session["ai_yorum"] = ai_yorum
 
             print("AI YORUM:")
@@ -536,18 +596,36 @@ def receipts():
     if not user_id:
         return redirect("/login")
 
+    magaza = request.args.get("magaza", "")
+    kategori = request.args.get("kategori", "")
+    tarih = request.args.get("tarih", "")
+
     conn = sqlite3.connect("fisler.db")
     cursor = conn.cursor()
 
-    cursor.execute(
-        """
-        SELECT *
-        FROM fisler
-        WHERE user_id=?
-        ORDER BY id DESC
-        """,
-        (user_id,)
-    )
+    sql = """
+    SELECT *
+    FROM fisler
+    WHERE user_id=?
+    """
+
+    params = [user_id]
+
+    if magaza:
+        sql += " AND magaza LIKE ?"
+        params.append(f"%{magaza}%")
+
+    if kategori:
+        sql += " AND kategori=?"
+        params.append(kategori)
+
+    if tarih:
+        sql += " AND tarih=?"
+        params.append(tarih)
+
+    sql += " ORDER BY id DESC"
+
+    cursor.execute(sql, tuple(params))
 
     fisler = cursor.fetchall()
 

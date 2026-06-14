@@ -104,55 +104,89 @@
 
             </div>
 
-            {% if analiz %}
-            <div class="result-box">
+           {% if analiz or ai_yorum %}
 
-                <h2>📄 Son OCR Analizi</h2>
+<div class="dashboard-analysis">
 
-                <div class="summary-item">
-                    <span>Tarih</span>
-                    <strong>{{ analiz["tarih"] }}</strong>
-                </div>
+    <!-- ÜSTTE YAPAY ZEKA -->
 
-                <div class="summary-item">
-                    <span>Toplam Tutar</span>
-                    <strong>{{ analiz["toplam"] }} TL</strong>
-                </div>
+    {% if ai_yorum %}
+    <div class="result-box ai-result">
 
-                <div class="summary-item">
-                    <span>KDV</span>
-                    <strong>{{ analiz["kdv"] }} TL</strong>
-                </div>
+        <h2 class="gradient-title">🤖 Yapay Zeka Analizi</h2>
 
-                <div class="summary-item">
-                    <span>KDV Oranı</span>
-                    <strong>{{ analiz["kdv_orani"] }}</strong>
-                </div>
+        <div class="ai-box">
+{{ ai_yorum|safe }}
+</div>
 
-                <div class="summary-item">
-                    <span>Mağaza</span>
-                    <strong>{{ analiz["magaza"] }}</strong>
-                </div>
+    </div>
+    {% endif %}
 
-                <div class="summary-item">
-                    <span>Kategori</span>
-                    <strong>{{ analiz["kategori"] }}</strong>
-                </div>
+    <!-- ALTTA OCR + FİŞ ÖZETİ -->
 
-                <h3 style="margin-top:25px;">🔍 OCR Tarafından Okunan Metin</h3>
+    <div class="analysis-grid-bottom">
 
-                <pre class="ocr-box">{{ ocr_text }}</pre>
+        {% if analiz %}
+        <div class="result-box">
 
+            <h2 class="gradient-title">
+                🔍 OCR Tarafından Okunan Metin
+            </h2>
+
+            <pre class="ocr-box fixed-box">{{ ocr_text }}</pre>
+
+        </div>
+        {% endif %}
+
+
+        {% if analiz %}
+        <div class="result-box">
+
+            <h2 class="gradient-title">
+                📄 Fiş Özeti
+            </h2>
+
+            <div class="summary-item">
+                <span>📅 Tarih</span>
+                <strong>{{ analiz["tarih"] }}</strong>
             </div>
-            {% endif %}
 
-            {% if ai_yorum %}
-            <div class="result-box">
-                <h2>🤖 Yapay Zeka Yorumu</h2>
-                <pre class="ocr-box">{{ ai_yorum }}</pre>
+            <div class="summary-item">
+                <span>💰 Toplam Tutar</span>
+                <strong>{{ analiz["toplam"] }} TL</strong>
             </div>
-            {% endif %}
 
+            <div class="summary-item">
+                <span>🧾 KDV</span>
+                <strong>{{ analiz["kdv"] }} TL</strong>
+            </div>
+
+            <div class="summary-item">
+                <span>📊 KDV Oranı</span>
+                <strong>{{ analiz["kdv_orani"] }}</strong>
+            </div>
+
+            <div class="summary-item">
+                <span>🏪 Mağaza</span>
+                <strong>{{ analiz["magaza"] }}</strong>
+            </div>
+
+            <div class="summary-item">
+                <span>🛒 Kategori</span>
+                <strong>{{ analiz["kategori"] }}</strong>
+            </div>
+
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+          
            <div class="action-buttons">
 
     <a
