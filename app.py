@@ -507,15 +507,12 @@ def upload():
             print("SISTEM:", platform.system())
             print("TESSERACT:", pytesseract.pytesseract.tesseract_cmd)
 
-            print("OCR BASLIYOR")
 
-            print("OCR BASLIYOR")
-
-            ocr_text = "TEST OCR"
-
-            print("OCR BITTI")
-
-            print("OCR BITTI")
+            ocr_text = pytesseract.image_to_string(
+            temiz_resim,
+            lang="tur+eng",
+            config="--oem 3 --psm 6"
+)
 
             print("OCR SONUCU:")
             print(ocr_text)
