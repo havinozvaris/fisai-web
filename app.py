@@ -137,39 +137,36 @@ def magaza_bul(ocr_text):
 
 def resmi_iyilestir(dosya_yolu):
 
+    print("Dosya yolu:", dosya_yolu)
+
     img = cv2.imread(dosya_yolu)
 
     if img is None:
         raise Exception(f"Resim okunamadı -> {dosya_yolu}")
 
-    h, w = img.shape[:2]
+    gri = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    print(f"Orijinal boyut: {w}x{h}")
-
-    # Telefonlardan gelen büyük resimleri küçült
-    max_width = 600
-
-    if w > max_width:
-
-        oran = max_width / w
-
-        yeni_w = int(w * oran)
-        yeni_h = int(h * oran)
-
-        img = cv2.resize(
-            img,
-            (yeni_w, yeni_h),
-            interpolation=cv2.INTER_AREA
-        )
-
-        print(f"Küçültüldü: {yeni_w}x{yeni_h}")
-
-    gri = cv2.cvtColor(
-        img,
-        cv2.COLOR_BGR2GRAY
+    gri = cv2.resize(
+        gri,
+        None,
+        fx=2,
+        fy=2
     )
 
-    return gri
+    gri = cv2.GaussianBlur(
+        gri,
+        (3, 3),
+        0
+    )
+
+    _, esik = cv2.threshold(
+        gri,
+        0,
+        255,
+        cv2.THRESH_BINARY + cv2.THRESH_OTSU
+    )
+
+    return esik
 
 # -------------------------
 # OCR ANALİZ
@@ -491,16 +488,11 @@ def upload():
         try:
             temiz_resim = resmi_iyilestir(file_path)
 
-            import platform
-            print("SISTEM:", platform.system())
-            print("TESSERACT:", pytesseract.pytesseract.tesseract_cmd)
-
-
             ocr_text = pytesseract.image_to_string(
                 temiz_resim,
-                lang="eng",
-                config="--oem 1 --psm 11"
-            )
+                lang="tur+eng",
+                config="--oem 3 --psm 6"
+)
 
             print("OCR SONUCU:")
             print(ocr_text)
