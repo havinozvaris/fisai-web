@@ -170,7 +170,10 @@ def fis_bilgilerini_cek(ocr_text):
     kdv = 0.0
     kdv_orani = "Bulunamadı"
 
-    tarih_match = re.search(r"\d{2}[./]\d{2}[./]\d{4}", ocr_text)
+    tarih_match = re.search(
+        r"\d{2}[./]\d{2}[./]\d{4}",
+        ocr_text
+    )
 
     if tarih_match:
         tarih = tarih_match.group()
@@ -181,50 +184,80 @@ def fis_bilgilerini_cek(ocr_text):
     for satir in satirlar:
 
         temiz_satir = satir.strip()
+        temiz_satir = temiz_satir.replace(" ", "")
         kucuk = temiz_satir.lower()
 
         # TOPLAM
-        if "toplam" in kucuk and "topkdv" not in kucuk:
+        if "toplam" in kucuk and "aratoplam" not in kucuk and "topkdv" not in kucuk:
 
-            temiz_toplam = temiz_satir.replace(" ", "")
-
-            toplam_match = re.search(
-                r"(\d{1,3}(?:\.\d{3})*,\d{2})",
-                temiz_toplam
+            sayilar = re.findall(
+                r"\d+(?:[.,]\d+)*",
+                temiz_satir
             )
 
-            if toplam_match:
-                toplam = toplam_match.group(1)
+            sayilar_float = []
 
-        # TOPKDV
-        if "topkdv" in kucuk:
-
-            temiz_kdv = temiz_satir.replace(" ", "")
-
-            kdv_match = re.search(
-                r"(\d{1,3}(?:\.\d{3})*,\d{2})",
-                temiz_kdv
-            )
-
-            if kdv_match:
+            for s in sayilar:
 
                 try:
-                    kdv = float(
-                        kdv_match.group(1)
-                        .replace(".", "")
-                        .replace(",", ".")
-                    )
+
+                    if "," in s:
+                        deger = float(
+                            s.replace(".", "")
+                             .replace(",", ".")
+                        )
+                    else:
+                        deger = float(s)
+
+                    sayilar_float.append(deger)
+
                 except:
                     pass
 
-        # KDV ORANI
-        oran_match = re.findall(r"%\d{1,2}", temiz_satir)
+            if sayilar_float:
+                toplam = str(max(sayilar_float))
 
-        for oran in oran_match:
-            oranlar.append(oran)
+        # KDV
+        if "kdv" in kucuk:
+
+            sayilar = re.findall(
+                r"\d+(?:[.,]\d+)*",
+                temiz_satir
+            )
+
+            sayilar_float = []
+
+            for s in sayilar:
+
+                try:
+
+                    if "," in s:
+                        deger = float(
+                            s.replace(".", "")
+                             .replace(",", ".")
+                        )
+                    else:
+                        deger = float(s)
+
+                    sayilar_float.append(deger)
+
+                except:
+                    pass
+
+            if sayilar_float:
+                kdv = max(sayilar_float)
+
+        oran_match = re.findall(
+            r"%\d{1,2}",
+            temiz_satir
+        )
+
+        oranlar.extend(oran_match)
 
     if oranlar:
-        kdv_orani = ", ".join(sorted(set(oranlar)))
+        kdv_orani = ", ".join(
+            sorted(set(oranlar))
+        )
 
     return {
         "tarih": tarih,
